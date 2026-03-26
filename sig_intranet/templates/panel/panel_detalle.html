@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ panel.nombre }} - Panel SIG</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body class="detalle-body">
+    <div class="detalle-header">
+        <h1>📊 {{ panel.nombre }}</h1>
+        <div class="user-info">
+            <a href="{% url 'panel' %}">← Volver</a>
+            <a href="{% url 'logout' %}" class="logout-btn">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="iframe-container">
+        <iframe 
+            title="{{ panel.nombre }}" 
+            src="{{ panel.url_iframe }}" 
+            frameborder="0" 
+            allowFullScreen="true">
+        </iframe>
+    </div>
+
+    <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

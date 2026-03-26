@@ -1,0 +1,425 @@
+/* ============================================
+   ESTILOS BASE - Compartidos
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ============================================
+   LOGIN
+   ============================================ */
+.login-body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background: #fff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    max-width: 380px;
+}
+
+.login-container h1 {
+    text-align: center;
+    color: #1a1a2e;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    color: #333;
+    font-weight: 500;
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="password"]:focus {
+    outline: none;
+    border-color: #16213e;
+}
+
+.btn {
+    display: inline-block;
+    padding: 14px 24px;
+    background: #16213e;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    transition: background 0.3s;
+}
+
+.btn:hover {
+    background: #1a1a2e;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.error-messages {
+    background: #fee;
+    border: 1px solid #fcc;
+    color: #c00;
+    padding: 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.error-messages ul {
+    list-style: none;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+}
+
+.header h1 {
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+}
+
+.logout-btn {
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 4px 12px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   PANEL - Lista de paneles
+   ============================================ */
+.panel-body {
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+.panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 30px;
+}
+
+.panel-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.panel-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.panel-card-body {
+    padding: 24px;
+}
+
+.panel-card-body h2 {
+    font-size: 18px;
+    color: #1a1a2e;
+    margin-bottom: 16px;
+}
+
+.panel-card-body .btn {
+    font-size: 14px;
+    padding: 10px 20px;
+}
+
+.no-paneles {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+.no-paneles h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.no-paneles p {
+    font-size: 16px;
+}
+
+/* ============================================
+   PANEL DETALLE - iframe pantalla completa
+   ============================================ */
+.detalle-body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+.detalle-header {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 6px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 36px;
+}
+
+.detalle-header h1 {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.detalle-header a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 3px 10px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.detalle-header a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.iframe-container {
+    width: 100%;
+    height: calc(100% - 36px);
+}
+
+.iframe-container iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ============================================
+   BOTÓN ACTUALIZAR PANELES
+   ============================================ */
+.btn-actualizar {
+    background: #0d7c3d;
+    color: #fff;
+    border: none;
+    padding: 5px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.3s, opacity 0.3s;
+}
+
+.btn-actualizar:hover:not(:disabled) {
+    background: #0a5c2d;
+}
+
+.btn-actualizar.loading,
+.btn-actualizar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #666;
+}
+
+/* ============================================
+   PANEL DE ESTADO DEL JOB
+   ============================================ */
+.job-status-panel {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 12px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s;
+}
+
+.job-status-panel.hidden {
+    display: none;
+}
+
+.job-status-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.job-status-icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Animación de pulso para PENDING */
+.job-status-panel[data-state="PENDING"] .job-status-icon,
+.job-status-panel[data-state="SENDING"] .job-status-icon {
+    animation: pulse 1.5s infinite;
+}
+
+/* Animación de giro para RUNNING */
+.job-status-panel[data-state="RUNNING"] .job-status-icon {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.job-status-info {
+    flex: 1;
+}
+
+.job-status-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+}
+
+.job-status-detail {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+    word-break: break-all;
+}
+
+.job-status-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #999;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.job-status-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+/* Barra de progreso */
+.job-progress-bar {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+
+.job-progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+}
+
+/* Colores de progreso por estado */
+.job-status-panel[data-state="SENDING"] .job-progress-fill,
+.job-status-panel[data-state="PENDING"] .job-progress-fill {
+    background: #f39c12;
+}
+
+.job-status-panel[data-state="RUNNING"] .job-progress-fill {
+    background: #3498db;
+    animation: progress-pulse 1.5s ease infinite;
+}
+
+.job-status-panel[data-state="COMPLETED"] .job-progress-fill {
+    background: #0d7c3d;
+}
+
+.job-status-panel[data-state="FAILED"] .job-progress-fill {
+    background: #c0392b;
+}
+
+@keyframes progress-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* ============================================
+   TOAST - Notificaciones
+   ============================================ */
+.toast {
+    position: fixed;
+    top: 50px;
+    right: 20px;
+    padding: 14px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #fff;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    transition: opacity 0.4s, transform 0.4s;
+    transform: translateX(0);
+}
+
+.toast.hidden {
+    opacity: 0;
+    transform: translateX(100px);
+    pointer-events: none;
+}
+
+.toast.success {
+    background: #0d7c3d;
+}
+
+.toast.error {
+    background: #c0392b;
+}

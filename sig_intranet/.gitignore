@@ -1,0 +1,20 @@
+# Variables de entorno y secretos
+.env
+
+# Base de datos
+db.sqlite3
+
+# Entorno virtual
+venv/
+env/
+
+# Archivos compilados de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Archivos estáticos recolectados
+staticfiles/
+
+# Logs del servicio
+logs/
