@@ -1,0 +1,93 @@
+{% extends 'presupuestos/base.html' %}
+{% load presupuestos_extra %}
+
+{% block titulo %}{{ presupuesto.numero }}{% endblock %}
+
+{% block contenido %}
+<div class="pres-toolbar">
+    <h2>{{ presupuesto.numero }} <span class="estado estado-{{ presupuesto.estado }}">{{ presupuesto.get_estado_display }}</span></h2>
+    <div>
+        <a href="{% url 'presupuesto_pdf' presupuesto.id %}" target="_blank" class="btn">📄 Descargar PDF</a>
+    </div>
+</div>
+
+<div class="pres-detalle-grid">
+    <div class="pres-card">
+        <h3>Cliente</h3>
+        <p><strong>{{ presupuesto.cliente_nombre }}</strong> {% if presupuesto.cliente_rut %}({{ presupuesto.cliente_rut }}){% endif %}</p>
+        {% if presupuesto.cliente_contacto %}<p>Contacto: {{ presupuesto.cliente_contacto }}</p>{% endif %}
+        {% if presupuesto.cliente_email %}<p>Email: {{ presupuesto.cliente_email }}</p>{% endif %}
+        {% if presupuesto.cliente_direccion %}<p>Dirección: {{ presupuesto.cliente_direccion }}</p>{% endif %}
+    </div>
+    <div class="pres-card">
+        <h3>Servicio</h3>
+        <p>Área: <strong>{{ presupuesto.area.nombre }}</strong></p>
+        <p>Zona: {{ presupuesto.zona.nombre|default:'-' }}{% if presupuesto.comuna %} · Comuna: {{ presupuesto.comuna.nombre }}{% endif %}</p>
+        <p>Fecha emisión: {{ presupuesto.fecha_emision|date:'d-m-Y' }} · Validez: {{ presupuesto.validez_dias }} días</p>
+        <p>Creado por: {{ presupuesto.creado_por.username }}</p>
+    </div>
+    <div class="pres-card">
+        <h3>Parámetros aplicados</h3>
+        <p>Valor UF: {% if presupuesto.valor_uf %}{{ presupuesto.valor_uf|clp }}{% else %}no aplica{% endif %}</p>
+        <p>Valor km: {% if presupuesto.valor_km %}{{ presupuesto.valor_km|clp }}/km ({{ presupuesto.distancia_km }} km){% else %}no aplica{% endif %}</p>
+        <p>IVA: {{ presupuesto.porcentaje_iva }}%</p>
+    </div>
+</div>
+
+<table class="pres-tabla">
+    <thead>
+        <tr>
+            <th>Concepto</th>
+            <th>Unidad</th>
+            <th class="num">Cantidad</th>
+            <th class="num">P. unitario (CLP)</th>
+            <th class="num">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in detalles %}
+        <tr>
+            <td>{{ d.concepto }}{% if d.moneda == 'UF' %} <small>({{ d.precio_unitario }} UF)</small>{% endif %}</td>
+            <td>{{ d.unidad }}</td>
+            <td class="num">{{ d.cantidad }}</td>
+            <td class="num">{{ d.precio_unitario_clp|clp }}</td>
+            <td class="num">{{ d.total_clp|clp }}</td>
+        </tr>
+        {% endfor %}
+        {% if presupuesto.costo_traslado %}
+        <tr>
+            <td>Traslado ({{ presupuesto.distancia_km }} km{% if presupuesto.zona %}, zona {{ presupuesto.zona.nombre }}{% endif %})</td>
+            <td>km</td>
+            <td class="num">{{ presupuesto.distancia_km }}</td>
+            <td class="num">{{ presupuesto.valor_km|clp }}</td>
+            <td class="num">{{ presupuesto.costo_traslado|clp }}</td>
+        </tr>
+        {% endif %}
+    </tbody>
+    <tfoot>
+        <tr><td colspan="4" class="num">Subtotal (neto)</td><td class="num">{{ presupuesto.subtotal|clp }}</td></tr>
+        <tr><td colspan="4" class="num">IVA ({{ presupuesto.porcentaje_iva }}%)</td><td class="num">{{ presupuesto.monto_iva|clp }}</td></tr>
+        <tr class="fila-total"><td colspan="4" class="num">TOTAL</td><td class="num">{{ presupuesto.total|clp }}</td></tr>
+    </tfoot>
+</table>
+
+{% if presupuesto.notas %}
+<div class="pres-card">
+    <h3>Observaciones</h3>
+    <p>{{ presupuesto.notas|linebreaksbr }}</p>
+</div>
+{% endif %}
+
+<div class="pres-card">
+    <h3>Cambiar estado</h3>
+    <form method="post" action="{% url 'presupuesto_estado' presupuesto.id %}" class="pres-form-estado">
+        {% csrf_token %}
+        <select name="estado">
+            {% for valor, etiqueta in estados %}
+                <option value="{{ valor }}" {% if valor == presupuesto.estado %}selected{% endif %}>{{ etiqueta }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-sec">Actualizar estado</button>
+    </form>
+</div>
+{% endblock %}

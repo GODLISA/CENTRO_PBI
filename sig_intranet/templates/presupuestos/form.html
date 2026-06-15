@@ -1,0 +1,135 @@
+{% extends 'presupuestos/base.html' %}
+{% load static %}
+
+{% block titulo %}Nuevo presupuesto{% endblock %}
+
+{% block contenido %}
+<div class="pres-toolbar">
+    <h2>Nuevo presupuesto</h2>
+</div>
+
+{% if aviso_uf %}
+<div class="pres-mensaje warning">⚠️ {{ aviso_uf }}</div>
+{% endif %}
+
+<form method="post" id="form-presupuesto" class="pres-form">
+    {% csrf_token %}
+
+    <fieldset>
+        <legend>Datos del cliente</legend>
+        <div class="grid-2">
+            <div class="campo">
+                <label>Nombre / Razón social *</label>
+                <input type="text" name="cliente_nombre" required value="{{ datos.cliente_nombre|default:'' }}">
+            </div>
+            <div class="campo">
+                <label>RUT</label>
+                <input type="text" name="cliente_rut" value="{{ datos.cliente_rut|default:'' }}">
+            </div>
+            <div class="campo">
+                <label>Contacto</label>
+                <input type="text" name="cliente_contacto" value="{{ datos.cliente_contacto|default:'' }}">
+            </div>
+            <div class="campo">
+                <label>Email</label>
+                <input type="email" name="cliente_email" value="{{ datos.cliente_email|default:'' }}">
+            </div>
+            <div class="campo campo-ancho">
+                <label>Dirección</label>
+                <input type="text" name="cliente_direccion" value="{{ datos.cliente_direccion|default:'' }}">
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Servicio</legend>
+        <div class="grid-2">
+            <div class="campo">
+                <label>Área de servicio *</label>
+                <select name="area" id="sel-area" required>
+                    <option value="">-- Seleccionar área --</option>
+                    {% for a in areas %}
+                        <option value="{{ a.id }}">{{ a.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="campo">
+                <label>Zona</label>
+                <select name="zona" id="sel-zona">
+                    <option value="">-- Sin zona --</option>
+                    {% for z in zonas %}
+                        <option value="{{ z.id }}">{{ z.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="campo">
+                <label>Comuna de destino</label>
+                <select name="comuna" id="sel-comuna" disabled>
+                    <option value="">-- Seleccione una zona primero --</option>
+                </select>
+            </div>
+            <div class="campo">
+                <label>Km de traslado (ida + regreso)</label>
+                <input type="number" name="distancia_km" id="inp-km" min="0" step="0.1" value="0">
+                <p class="ayuda">Se autocompleta al elegir comuna; puede ajustarse manualmente.</p>
+            </div>
+            <div class="campo">
+                <label>Validez (días)</label>
+                <input type="number" name="validez_dias" min="1" value="30">
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Ítems del presupuesto</legend>
+        <p class="ayuda" id="ayuda-items">Seleccione primero un área de servicio para cargar su matriz de cobros.</p>
+
+        <table class="pres-tabla" id="tabla-lineas" style="display:none">
+            <thead>
+                <tr>
+                    <th style="width:42%">Concepto</th>
+                    <th>Unidad</th>
+                    <th>Moneda</th>
+                    <th class="num">P. unitario</th>
+                    <th class="num" style="width:90px">Cantidad</th>
+                    <th class="num">Total (CLP)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo-lineas"></tbody>
+        </table>
+
+        <div class="acciones-lineas" id="acciones-lineas" style="display:none">
+            <button type="button" class="btn btn-sec" id="btn-agregar-item">+ Agregar ítem de la matriz</button>
+            <button type="button" class="btn btn-sec" id="btn-agregar-manual">+ Agregar línea manual</button>
+        </div>
+
+        <div class="pres-resumen" id="resumen" style="display:none">
+            <div><span>Traslado:</span> <strong id="res-traslado">$0</strong></div>
+            <div><span>Subtotal (neto):</span> <strong id="res-subtotal">$0</strong></div>
+            <div><span>IVA (<span id="res-iva-pct">19</span>%):</span> <strong id="res-iva">$0</strong></div>
+            <div class="total"><span>TOTAL estimado:</span> <strong id="res-total">$0</strong></div>
+            <p class="ayuda">Valores referenciales. El cálculo definitivo se realiza al guardar, con los parámetros vigentes del día.</p>
+        </div>
+    </fieldset>
+
+    <fieldset>
+        <legend>Observaciones</legend>
+        <textarea name="notas" rows="3" placeholder="Observaciones que aparecerán en el PDF (opcional)">{{ datos.notas|default:'' }}</textarea>
+    </fieldset>
+
+    <input type="hidden" name="lineas_json" id="lineas-json">
+    <div class="pres-acciones">
+        <a href="{% url 'presupuestos_lista' %}" class="btn btn-sec">Cancelar</a>
+        <button type="submit" class="btn">Guardar presupuesto</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script
+    src="{% static 'presupuestos/js/form_presupuesto.js' %}"
+    data-items-url-plantilla="{% url 'presupuestos_api_items' 0 %}"
+    data-comunas-url-plantilla="{% url 'presupuestos_api_comunas' 0 %}">
+</script>
+{% endblock %}

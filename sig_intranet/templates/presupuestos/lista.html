@@ -1,0 +1,60 @@
+{% extends 'presupuestos/base.html' %}
+{% load presupuestos_extra %}
+
+{% block titulo %}Listado de presupuestos{% endblock %}
+
+{% block contenido %}
+<div class="pres-toolbar">
+    <h2>Presupuestos</h2>
+    <a href="{% url 'presupuesto_nuevo' %}" class="btn">+ Nuevo presupuesto</a>
+</div>
+
+<form method="get" class="pres-filtros">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por número, cliente o RUT...">
+    <select name="estado">
+        <option value="">Todos los estados</option>
+        {% for valor, etiqueta in estados %}
+            <option value="{{ valor }}" {% if valor == estado_actual %}selected{% endif %}>{{ etiqueta }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-sec">Filtrar</button>
+</form>
+
+{% if presupuestos %}
+<table class="pres-tabla">
+    <thead>
+        <tr>
+            <th>Número</th>
+            <th>Cliente</th>
+            <th>Área</th>
+            <th>Zona</th>
+            <th>Fecha</th>
+            <th class="num">Total</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in presupuestos %}
+        <tr>
+            <td><a href="{% url 'presupuesto_detalle' p.id %}">{{ p.numero }}</a></td>
+            <td>{{ p.cliente_nombre }}</td>
+            <td>{{ p.area.nombre }}</td>
+            <td>{{ p.zona.nombre|default:'-' }}</td>
+            <td>{{ p.fecha_emision|date:'d-m-Y' }}</td>
+            <td class="num">{{ p.total|clp }}</td>
+            <td><span class="estado estado-{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+            <td>
+                <a href="{% url 'presupuesto_pdf' p.id %}" target="_blank" title="Ver PDF">📄 PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="pres-vacio">
+    <h3>No hay presupuestos</h3>
+    <p>Crea el primero con el botón "+ Nuevo presupuesto".</p>
+</div>
+{% endif %}
+{% endblock %}

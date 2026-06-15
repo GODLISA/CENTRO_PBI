@@ -1,0 +1,1887 @@
+{
+ "zonas": [
+  {
+   "nombre": "Centro",
+   "descripcion": "Región Metropolitana y V Región (hoja CENTRO-V de la matriz)",
+   "comunas": [
+    {
+     "nombre": "Valparaíso",
+     "region": "Valparaíso",
+     "km_ida_regreso": 240.0
+    },
+    {
+     "nombre": "Viña del Mar",
+     "region": "Valparaíso",
+     "km_ida_regreso": 254.0
+    },
+    {
+     "nombre": "El Quisco",
+     "region": "Valparaíso",
+     "km_ida_regreso": 228.0
+    },
+    {
+     "nombre": "San Antonio",
+     "region": "Valparaíso",
+     "km_ida_regreso": 232.0
+    },
+    {
+     "nombre": "Calera",
+     "region": "Valparaíso",
+     "km_ida_regreso": 232.0
+    },
+    {
+     "nombre": "La Ligua",
+     "region": "Valparaíso",
+     "km_ida_regreso": 306.0
+    },
+    {
+     "nombre": "Los Andes",
+     "region": "Valparaíso",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Quillota",
+     "region": "Valparaíso",
+     "km_ida_regreso": 252.0
+    },
+    {
+     "nombre": "Quilpué",
+     "region": "Valparaíso",
+     "km_ida_regreso": 246.0
+    },
+    {
+     "nombre": "Melipilla",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Talagante",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Peñaflor",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Malloco",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Calera de Tango",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Maipú",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Cerrillos",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Estación Central",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Independencia",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Lo Barnechea",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Vitacura",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Las Condes",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Santiago",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "La Florida",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "San José de Maipo",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "La Reina",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Recoleta",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Quilicura",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Lo Prado",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Renca",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Pudahuel",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Huechuraba",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Conchalí",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Cerro Navia",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Buin",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "San Bernardo",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Peñalolen",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Ñuñoa",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Chicureo",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Colina",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "La granja",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "La Pintana",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Macul",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Puente Alto",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "La Cisterna",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "San Joaquín",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Providencia",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Quinta Normal",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "San Miguel",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "San ramón",
+     "region": "R.M.",
+     "km_ida_regreso": 0
+    }
+   ]
+  },
+  {
+   "nombre": "Norte",
+   "descripcion": "Regiones de Arica a Coquimbo (hoja NORTE de la matriz)",
+   "comunas": [
+    {
+     "nombre": "Arica",
+     "region": "Arica",
+     "km_ida_regreso": 4066.0
+    },
+    {
+     "nombre": "Iquique",
+     "region": "Tarapacá",
+     "km_ida_regreso": 3510.0
+    },
+    {
+     "nombre": "Pozo al Monte",
+     "region": "Tarapacá",
+     "km_ida_regreso": 3534.0
+    },
+    {
+     "nombre": "Alto Hospicio",
+     "region": "Tarapacá",
+     "km_ida_regreso": 3530.0
+    },
+    {
+     "nombre": "La Chimba",
+     "region": "Antofagasta",
+     "km_ida_regreso": 2694.0
+    },
+    {
+     "nombre": "Antofagasta",
+     "region": "Antofagasta",
+     "km_ida_regreso": 2668.0
+    },
+    {
+     "nombre": "Calama",
+     "region": "Antofagasta",
+     "km_ida_regreso": 3066.0
+    },
+    {
+     "nombre": "Tal Tal",
+     "region": "Antofagasta",
+     "km_ida_regreso": 2214.0
+    },
+    {
+     "nombre": "Caldera",
+     "region": "Atacama",
+     "km_ida_regreso": 1742.0
+    },
+    {
+     "nombre": "Chañaral",
+     "region": "Atacama",
+     "km_ida_regreso": 1924.0
+    },
+    {
+     "nombre": "Copiapó",
+     "region": "Atacama",
+     "km_ida_regreso": 1608.0
+    },
+    {
+     "nombre": "Vallenar",
+     "region": "Atacama",
+     "km_ida_regreso": 1324.0
+    },
+    {
+     "nombre": "Monte Patria",
+     "region": "Coquimbo",
+     "km_ida_regreso": 874.0
+    },
+    {
+     "nombre": "Ovalle",
+     "region": "Coquimbo",
+     "km_ida_regreso": 810.0
+    },
+    {
+     "nombre": "La Serena",
+     "region": "Coquimbo",
+     "km_ida_regreso": 944.0
+    },
+    {
+     "nombre": "Coquimbo",
+     "region": "Coquimbo",
+     "km_ida_regreso": 461.0
+    },
+    {
+     "nombre": "Illapel",
+     "region": "Coquimbo",
+     "km_ida_regreso": 566.0
+    },
+    {
+     "nombre": "Los Vilos",
+     "region": "Coquimbo",
+     "km_ida_regreso": 450.0
+    }
+   ]
+  },
+  {
+   "nombre": "Sur",
+   "descripcion": "Regiones de O'Higgins a Magallanes (hoja SUR de la matriz)",
+   "comunas": [
+    {
+     "nombre": "Rancagua",
+     "region": "O'Higgins",
+     "km_ida_regreso": 174.0
+    },
+    {
+     "nombre": "Rengo",
+     "region": "O'Higgins",
+     "km_ida_regreso": 236.0
+    },
+    {
+     "nombre": "San Fernando",
+     "region": "O'Higgins",
+     "km_ida_regreso": 268.0
+    },
+    {
+     "nombre": "San Vicente",
+     "region": "O'Higgins",
+     "km_ida_regreso": 284.0
+    },
+    {
+     "nombre": "Peumo",
+     "region": "O'Higgins",
+     "km_ida_regreso": 300.0
+    },
+    {
+     "nombre": "Machalí",
+     "region": "O'Higgins",
+     "km_ida_regreso": 188.0
+    },
+    {
+     "nombre": "Coltauco",
+     "region": "O'Higgins",
+     "km_ida_regreso": 242.0
+    },
+    {
+     "nombre": "Chimbarongo",
+     "region": "O'Higgins",
+     "km_ida_regreso": 312.0
+    },
+    {
+     "nombre": "Palmilla",
+     "region": "O'Higgins",
+     "km_ida_regreso": 549.0
+    },
+    {
+     "nombre": "Sta. Cruz",
+     "region": "O'Higgins",
+     "km_ida_regreso": 360.0
+    },
+    {
+     "nombre": "Pichilemu",
+     "region": "O'Higgins",
+     "km_ida_regreso": 208.0
+    },
+    {
+     "nombre": "Curicó",
+     "region": "Maule",
+     "km_ida_regreso": 394.0
+    },
+    {
+     "nombre": "Molina",
+     "region": "Maule",
+     "km_ida_regreso": 422.0
+    },
+    {
+     "nombre": "Talca",
+     "region": "Maule",
+     "km_ida_regreso": 514.0
+    },
+    {
+     "nombre": "Linares",
+     "region": "Maule",
+     "km_ida_regreso": 614.0
+    },
+    {
+     "nombre": "Cauquenes",
+     "region": "Maule",
+     "km_ida_regreso": 714.0
+    },
+    {
+     "nombre": "Parral",
+     "region": "Maule",
+     "km_ida_regreso": 686.0
+    },
+    {
+     "nombre": "Chillán",
+     "region": "BioBio",
+     "km_ida_regreso": 810.0
+    },
+    {
+     "nombre": "San Carlos",
+     "region": "BioBio",
+     "km_ida_regreso": 766.0
+    },
+    {
+     "nombre": "Ránquil",
+     "region": "BioBio",
+     "km_ida_regreso": 910.0
+    },
+    {
+     "nombre": "Talcahuano",
+     "region": "BioBio",
+     "km_ida_regreso": 1006.0
+    },
+    {
+     "nombre": "Tomé",
+     "region": "BioBio",
+     "km_ida_regreso": 1014.0
+    },
+    {
+     "nombre": "Santa -Juana",
+     "region": "BioBio",
+     "km_ida_regreso": 1106.0
+    },
+    {
+     "nombre": "Coronel",
+     "region": "BioBio",
+     "km_ida_regreso": 1066.0
+    },
+    {
+     "nombre": "Concepción",
+     "region": "BioBio",
+     "km_ida_regreso": 1000.0
+    },
+    {
+     "nombre": "Talcahuano",
+     "region": "BioBio",
+     "km_ida_regreso": 1006.0
+    },
+    {
+     "nombre": "Cañete",
+     "region": "BioBio",
+     "km_ida_regreso": 1272.0
+    },
+    {
+     "nombre": "Chiguayante",
+     "region": "BioBio",
+     "km_ida_regreso": 1036.0
+    },
+    {
+     "nombre": "Los Angeles",
+     "region": "BioBio",
+     "km_ida_regreso": 1030.0
+    },
+    {
+     "nombre": "Angol",
+     "region": "Araucanía",
+     "km_ida_regreso": 1134.0
+    },
+    {
+     "nombre": "Collipulli",
+     "region": "Araucanía",
+     "km_ida_regreso": 1162.0
+    },
+    {
+     "nombre": "Victoria",
+     "region": "Araucanía",
+     "km_ida_regreso": 1232.0
+    },
+    {
+     "nombre": "Temuco",
+     "region": "Araucanía",
+     "km_ida_regreso": 1358.0
+    },
+    {
+     "nombre": "Villarrica",
+     "region": "Araucanía",
+     "km_ida_regreso": 1522.0
+    },
+    {
+     "nombre": "Pucón",
+     "region": "Araucanía",
+     "km_ida_regreso": 1570.0
+    },
+    {
+     "nombre": "Futrono",
+     "region": "Los Ríos",
+     "km_ida_regreso": 1784.0
+    },
+    {
+     "nombre": "Panguipulli",
+     "region": "Los Ríos",
+     "km_ida_regreso": 1652.0
+    },
+    {
+     "nombre": "Valdivia",
+     "region": "Los Ríos",
+     "km_ida_regreso": 1698.0
+    },
+    {
+     "nombre": "Río Bueno",
+     "region": "Los Ríos",
+     "km_ida_regreso": 1800.0
+    },
+    {
+     "nombre": "La Unión",
+     "region": "Los Ríos",
+     "km_ida_regreso": 1808.0
+    },
+    {
+     "nombre": "Osorno",
+     "region": "Los Lagos",
+     "km_ida_regreso": 1858.0
+    },
+    {
+     "nombre": "Puerto Varas",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2032.0
+    },
+    {
+     "nombre": "Puerto Montt",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2066.0
+    },
+    {
+     "nombre": "Ancud",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2248.0
+    },
+    {
+     "nombre": "Castro",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2240.0
+    },
+    {
+     "nombre": "Chonchi",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2444.0
+    },
+    {
+     "nombre": "Dalcahue",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2374.0
+    },
+    {
+     "nombre": "Quellón",
+     "region": "Los Lagos",
+     "km_ida_regreso": 2568.0
+    },
+    {
+     "nombre": "Punta Arenas",
+     "region": "Magallanes y de la Antartica Chilena",
+     "km_ida_regreso": 0
+    },
+    {
+     "nombre": "Coyhaique",
+     "region": "Aysen del Gral Carlos Ibañez del Campo",
+     "km_ida_regreso": 0
+    }
+   ]
+  }
+ ],
+ "areas": [
+  {
+   "nombre": "Instalación Equipos Gastronómicos",
+   "descripcion": "Matriz hoja \"Instalación Eq. Gastro\". Instalación en horas M.O. (1 UF/hr) + materiales.",
+   "items": [
+    {
+     "concepto": "Instalación FREIDORAS FRYMASTER GF14 / / RE114 MJ3 / MJ45 OCF (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales FREIDORAS FRYMASTER GF14 / / RE114 MJ3 / MJ45 OCF",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 52000
+    },
+    {
+     "concepto": "Instalación FREIDORAS FRYMASTER 1814 / 230 (Considera 4 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales FREIDORAS FRYMASTER 1814 / 230",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 52000
+    },
+    {
+     "concepto": "Instalación MAQUINAS DE HIELO EC-50 UY210 / 240 / 274 (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales MAQUINAS DE HIELO EC-50 UY210 / 240 / 274",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Instalación MAQUINAS DE HIELO IR (Considera 4 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales MAQUINAS DE HIELO IR",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 50000
+    },
+    {
+     "concepto": "Instalación HORNOS CONVOTHERME 6.06 / 6.10 10.10 / 20.10 (Considera 4 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales HORNOS CONVOTHERME 6.06 / 6.10 10.10 / 20.10",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 50000
+    },
+    {
+     "concepto": "Instalación HORNOS LAINOX (Considera 4 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales HORNOS LAINOX",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 50000
+    },
+    {
+     "concepto": "Instalación HORNOS MERRYCHEF MODELOS E3 - E4 (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales HORNOS MERRYCHEF MODELOS E3 - E4",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación GARLAND (Considera 4 hr/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales GARLAND",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación PLANCHA WYOTT (ELECTRICA) (Considera 2 hr/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales PLANCHA WYOTT (ELECTRICA)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación PLANCHA WYOTT (GAS) (Considera 3 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 3.0
+    },
+    {
+     "concepto": "Materiales PLANCHA WYOTT (GAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación CLEVELAND VAPORERA (Considera 5 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 5.0
+    },
+    {
+     "concepto": "Materiales CLEVELAND VAPORERA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 50000
+    },
+    {
+     "concepto": "Instalación MODULINE ABATIDOR C/CONEXIÓN REMOTA (Considera 5 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 5.0
+    },
+    {
+     "concepto": "Materiales MODULINE ABATIDOR C/CONEXIÓN REMOTA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 100000
+    },
+    {
+     "concepto": "Instalación MODULINE ABATIDOR COMPACTO (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales MODULINE ABATIDOR COMPACTO",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Instalación STOELTING (Considera 4 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 4.0
+    },
+    {
+     "concepto": "Materiales STOELTING",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Instalación GRANULDISK (Considera 5 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 5.0
+    },
+    {
+     "concepto": "Materiales GRANULDISK",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 60000
+    },
+    {
+     "concepto": "Instalación KROMO Lavavajillas (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales KROMO Lavavajillas",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación EVERPURE Filtro y Cabeza (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales EVERPURE Filtro y Cabeza",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación MAIGAS COCINAS Y HORNOS (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales MAIGAS COCINAS Y HORNOS",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación MIMET (Considera 2 hrs/mo)",
+     "unidad": "servicio",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Materiales MIMET",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Visita técnica (incluye 1 hr M.O.)",
+     "unidad": "visita",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Hora adicional mano de obra",
+     "unidad": "hora",
+     "moneda": "UF",
+     "precio": 1.0
+    },
+    {
+     "concepto": "Alojamiento hotel (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 65000
+    },
+    {
+     "concepto": "Viático desayuno (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 4000
+    },
+    {
+     "concepto": "Viático almuerzo (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Viático cena (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono diario técnico",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono trabajo festivo/domingo",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 25000
+    }
+   ]
+  },
+  {
+   "nombre": "Instalación Equipos de Taller",
+   "descripcion": "Matriz hoja \"Instalación Eq. Taller\". Valores CLP por equipo (M.O. taller: 0,85 UF/hr).",
+   "items": [
+    {
+     "concepto": "Instalación TUNEL ISTOBAL DT001181 (2 ARCOS) (20 dias/8 hrs. x dia/mo)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 4967163
+    },
+    {
+     "concepto": "Materiales TUNEL ISTOBAL DT001181 (2 ARCOS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 500000
+    },
+    {
+     "concepto": "Instalación PORTAL MSTAR (1 ARCO) (Considera 12 dias/8 hrs. x dia/mo)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 2980298
+    },
+    {
+     "concepto": "Materiales PORTAL MSTAR (1 ARCO)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 380000
+    },
+    {
+     "concepto": "Instalación LAVA BUSES ISTOBAL PROGRESS HEAVYWASH (20 dias/8 hrs. x dia/mo)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 4967163
+    },
+    {
+     "concepto": "Arriendo grúa/alza hombre LAVA BUSES ISTOBAL PROGRESS HEAVYWASH",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 1360000
+    },
+    {
+     "concepto": "Materiales LAVA BUSES ISTOBAL PROGRESS HEAVYWASH",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 380000
+    },
+    {
+     "concepto": "Instalación RECICLADOR (de 1 a 2 botellas) Sobre-nivel (4 ds/8hrs x dia)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 993433
+    },
+    {
+     "concepto": "Materiales RECICLADOR (de 1 a 2 botellas) Sobre-nivel",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 150000
+    },
+    {
+     "concepto": "Instalación RECICLADOR (de 3 botellas) Sobre-nivel (5 ds/8hrs x dia)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 1241791
+    },
+    {
+     "concepto": "Materiales RECICLADOR (de 3 botellas) Sobre-nivel",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 150000
+    },
+    {
+     "concepto": "Instalación DESMINERALIZADOR (SOLO OSMOSIS) (5ds/8hrs x dia)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 1241791
+    },
+    {
+     "concepto": "Materiales DESMINERALIZADOR (SOLO OSMOSIS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 150000
+    },
+    {
+     "concepto": "Instalación ASPIRADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 105374
+    },
+    {
+     "concepto": "Materiales ASPIRADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 15000
+    },
+    {
+     "concepto": "Instalación HIDROLAVADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 69395
+    },
+    {
+     "concepto": "Instalación HIDROWASH",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 620895
+    },
+    {
+     "concepto": "Materiales HIDROWASH",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 100000
+    },
+    {
+     "concepto": "Instalación COMPRESOR 3HP",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 104092
+    },
+    {
+     "concepto": "Materiales COMPRESOR 3HP",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Instalación BATERIA LUBRICACION (1 BOMBA, 1 CARRETE, 1 PISTOLA)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 73477
+    },
+    {
+     "concepto": "Materiales BATERIA LUBRICACION (1 BOMBA, 1 CARRETE, 1 PISTOLA)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación TIJERA SERVICIO",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 163281
+    },
+    {
+     "concepto": "Materiales TIJERA SERVICIO",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 35000
+    },
+    {
+     "concepto": "Instalación ALINEADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 347222
+    },
+    {
+     "concepto": "Materiales ALINEADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 5000
+    },
+    {
+     "concepto": "Instalación ELEVADOR SPOA 10 (ELEVADOR DE 2 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 225000
+    },
+    {
+     "concepto": "Materiales ELEVADOR SPOA 10 (ELEVADOR DE 2 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 20000
+    },
+    {
+     "concepto": "Instalación ELEVADOR (35 TON) (ELEVADOR DE 4 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 328571
+    },
+    {
+     "concepto": "Materiales ELEVADOR (35 TON) (ELEVADOR DE 4 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 30000
+    },
+    {
+     "concepto": "Instalación ELEVADOR (+ DE 35 TON.) (ELEVADOR DE 4 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 416667
+    },
+    {
+     "concepto": "Materiales ELEVADOR (+ DE 35 TON.) (ELEVADOR DE 4 COLUMNAS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 50000
+    },
+    {
+     "concepto": "Instalación ELEVADOR DE TIJERA De Alineacion",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 319444
+    },
+    {
+     "concepto": "Materiales ELEVADOR DE TIJERA De Alineacion",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 35000
+    },
+    {
+     "concepto": "Instalación DESMONTADORA (VEHICULOS LIVIANOS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 111111
+    },
+    {
+     "concepto": "Materiales DESMONTADORA (VEHICULOS LIVIANOS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación DESMONTADORA (VEHICULOS PESADOS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 125000
+    },
+    {
+     "concepto": "Materiales DESMONTADORA (VEHICULOS PESADOS)",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Instalación BALANCEADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 111111
+    },
+    {
+     "concepto": "Materiales BALANCEADORA",
+     "unidad": "servicio",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Visita técnica (incluye 1 hr M.O.)",
+     "unidad": "visita",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "Hora adicional mano de obra",
+     "unidad": "hora",
+     "moneda": "UF",
+     "precio": 0.85
+    },
+    {
+     "concepto": "Alojamiento hotel (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 65000
+    },
+    {
+     "concepto": "Viático desayuno (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 4000
+    },
+    {
+     "concepto": "Viático almuerzo (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Viático cena (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono diario técnico",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono trabajo festivo/domingo",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Viático diario por persona (taller)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 25000
+    },
+    {
+     "concepto": "Bono viaje (por semana)",
+     "unidad": "semana",
+     "moneda": "CLP",
+     "precio": 40000
+    }
+   ]
+  },
+  {
+   "nombre": "Mantención Preventiva Equipos Gastronómicos",
+   "descripcion": "Matriz hoja \"MP Eq.Gastro\". Valor por mantención en UF (UF del día + IVA), no incluye visita ni repuestos.",
+   "items": [
+    {
+     "concepto": "MP COBALT Freidora Electrica (NF94E2,52,5) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP COBALT Plancha lisa Fry-Top (NFT98EL) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP COBALT Parrilla Asadora eléctrica (NG98EP) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP COBALT Cocina Mural electrica (NC98EP) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP COBALT Cocina induccion 2,5 placas (NI94TE) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP CONVOTHERM Horno Convector (ES 6,06) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP CONVOTHERM Horno Convector (C4 2,50.2,50 Mini) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP CONVOTHERM Horno Convector (4 EASY DIAL GAS 10.10) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 4.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas 2,5 tinas, computador y sistema filtrado (FPGL-2,530-CA) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas 5 tinas, controlador smart, filtro, encenedido elect. (FPLHD565C-P) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas 2,5 tinas, thermotube, filtrador, computador smart. (2,51814GF) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas (GF14-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas alta eficiencia (MJ35-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas alta eficiencia c/computador (MJ35EC-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas alta eficiencia (MJ45E-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas alta eficiencia c/computador (MJ45EC-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas 2,5 tinas, c/computador y filtrador (FPP2,535ECDSD) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas, c/computador (MJCF-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora a gas alta eficiencia c/computador (MJ45E-2,5CSD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora electrica (RE14-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora electrica c/computador (RE14C-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora electrica (RE17-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora electrica c/computador (RE17C-SD) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Freidora electrica (RE-180) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FRYMASTER Filtrador de aceite (PF50R - PF95LP) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP FIREX Sarten Basculante (BM8 E 801) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP FIREX Marmita Electrica (PM7 IE050) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP GRANULDISK Lavadora de depositos Grastonorn y utensilios (96 GN) (FLEXI) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP GRANULDISK Lavadora de depositos Grastonorn y utensilios (144 GN) (SMART) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP GRANULDISK Lavadora de depositos Grastonorn y utensilios (192,5 GN) (MAXI) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP HOTMIX PRO Hotmix (mezclado, cuter, calentamiento de alimentos) (EASY HM2,5E) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.8
+    },
+    {
+     "concepto": "MP HOTMIX PRO Hotmix (mezclado, cuter, calentamiento y caramelizaci alimentos) (GASTRO X HM2,5GX) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.8
+    },
+    {
+     "concepto": "MP HOTMIX PRO Hotmix (mezclado, cuter, calentamiento y caramelizaci alimentos) (GASTRO XL HM3XL) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.8
+    },
+    {
+     "concepto": "MP HOTMIX PRO Hotmix (mezclador, cuter, enfriamiento y congelado de alimentos) (BREEZE HM2,5BRZ) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.8
+    },
+    {
+     "concepto": "MP KROMO Lavadora de copas (Aqua 40) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavadora de copas con bomba (Aqua 40 LS +PS) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavadora de copas (DW102,5M0010) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavavajilla carga frontal (Aqua 50) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavavajilla carga frontal con bomba (Lux 60 EL) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavavajilla capota (Hood 110 T) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavavajilla capota c/recuperador ener. (HD-140 HR) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP KROMO Lavavajilla arrastre (rubaiyat) (K3800/DXK2,56) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 4.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Naboo 10 GN elect c/caldera (NAEB101) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Naboo 7 GN elect c/caldera (+ Smokegrill) (NAEB071) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Naboo 10 GN gas c/caldera (+ Smokegrill) (NAGB101) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Naboo 2,50 GN gas c/caldera (+ Smokegrill) (NAEB2,501) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Sapiens 7 GN S/caldera (SAEV071) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Sapiens 10 GN S/caldera (+ Sonda + Multiprogram) (SAEV101) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Sapiens 7 GN gas C/caldera (+ Sonda + Multiprogram) (SAGB071) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno Sapiens 10 GN gas C/caldera (+ Sonda + Multiprogram) (SAGB101) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno compacto 6 GN elect (CEV061S + Sonda) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno compacto 6 GN 2,5/3 elect (CEV02,56S + Sonda) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno ready convección 5 GN elect (REC051S) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno ready convección 5 GN gas (RGC051M) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP LAINOX Horno ready mixto 5 GN gas (RGV051M + sonda) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MAXXCOLD Salseras de 1,2,50 x 75 (a la pared) (MXCR48S) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP MAXXCOLD Mesón refrigerado de 1,2,50 x 70 (MXCR48U) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP MAXXCOLD Congelador/Refrigerador 2,5 puertas (MXCF-49FD) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP IMPERIAL Countertoop hotplate electrico (IHPA-6-36-E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP NACIONAL Anafe eléctrico 6 platos (AE466000) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP NACIONAL COCINA ELECT. 4 PLATOS SOBREMESA (1749) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP NACIONAL COCINA ELECT. 4 PLATOS SOBREMESA (2,52,578) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP NACIONAL COCINA SEMI-INDU GAS 4 QUEMA BIGGI (CG-4) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.0
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo 2,55kls./día c/bins de 2,55kgs. (UG030A) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo 45 kls./día c/bins de 2,55kgs. (UG050A) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 40 y 60 kls/2,54 hrs. c/bins de 36kgs. (U-140) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 98 y 67 kls/2,54 hrs. c/bins de 37kgs. (U-2,540) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 110 y 140 kls/2,54 hrs. c/bins de 45kgs. (U-310) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 141 y 102,5 kls/2,54 hrs. S/bin (I-300) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 152,5 y 102,5 kls/2,54 hrs. S/bin (I-32,52,5) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 191 y 145 kls/2,54 hrs. S/bin (I-450) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 188 y 132,5 kls/2,54 hrs. S/bin (I-52,52,5) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 2,52,57 y 168 kls/2,54 hrs. S/bin (I-500) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 2,595 y 2,515 kls/2,54 hrs. S/bin (I-0606) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 372,5 y 2,579 kls/2,54 hrs. S/bin (I-906) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 458 y 338 kls/2,54 hrs. S/bin (I-1000) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 547 y 42,52,5 kls/2,54 hrs. S/bin (I-12,500) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 705 y 536 kls/2,54 hrs. S/bin (I-1400) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo entre 830 y 62,59 kls/2,54 hrs. S/bin (I-1800) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MANITOWOC Fabricador de hielo escama 32,50 kls/2,54 hrs. S/bin (RFS-650A) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MENUMASTER Microondas (RMS510T) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 1.5
+    },
+    {
+     "concepto": "MP MERRYCHEF Hornos de 2,5/3 sobre atriles de 55 x 70 puerta frontal (E4) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.0
+    },
+    {
+     "concepto": "MP MERRYCHEF Hornos de 2,5/3 sobre atriles de 55 x 70 puerta frontal (E1) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.0
+    },
+    {
+     "concepto": "MP MODULINE Abatidor de de temperatura 4 bandejas eléctrico (TBF041E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Abatidor de temperatura (TBF061E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Abatidor de temperatura 5 GN (BFP051S) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Abatidor de temperatura 16 GN (BFP161S) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Abatidor 2,50 GN carro al piso (BCPC02,5P) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Abatidor 40 GN al piso (BCPC42,5P) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Unidad condensadora (BCPC42,5P) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 8 GN (HHT081E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 16 GN (HHT161E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 10 GN (HHT052,5E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 16 GN (HHT082,5E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 32,5 GN (HHT162,5E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP MODULINE Matenedor de alimentos 32,5 GN (HHT-2,562,5E) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.5
+    },
+    {
+     "concepto": "MP ORVED Envasadora al vacio (bomba 12,5mts3/hr) (Evox 30) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP ORVED Estanque de coccion sous-vide (+ Accesorios) (Svthermo) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.5
+    },
+    {
+     "concepto": "MP ORVED Envasadora al vacio (SVS-31N) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP ORVED Envasadora al vacio (SVS-41N) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP ORVED Envasadora al vacio (SVS-308) - frecuencia bimensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP UNIVEX Batidora Universal Planetaria (SRM-30) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP UNIVEX Ablandora (SRM-31) - frecuencia trimestral",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP VOLLRATH Encimera induccion, calentador para buffet (59502.575) - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP WYOTT Plancha - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 2.0
+    },
+    {
+     "concepto": "MP ZUMEX MAQUINA DE JUGO - frecuencia mensual",
+     "unidad": "mantención",
+     "moneda": "UF",
+     "precio": 3.0
+    },
+    {
+     "concepto": "Visita técnica (incluye 1 hr M.O.)",
+     "unidad": "visita",
+     "moneda": "UF",
+     "precio": 2
+    },
+    {
+     "concepto": "Hora adicional mano de obra",
+     "unidad": "hora",
+     "moneda": "UF",
+     "precio": 1
+    },
+    {
+     "concepto": "Alojamiento hotel (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 65000
+    },
+    {
+     "concepto": "Viático desayuno (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 4000
+    },
+    {
+     "concepto": "Viático almuerzo (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Viático cena (por técnico)",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono diario técnico",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 10000
+    },
+    {
+     "concepto": "Bono trabajo festivo/domingo",
+     "unidad": "día",
+     "moneda": "CLP",
+     "precio": 25000
+    }
+   ]
+  }
+ ]
+}

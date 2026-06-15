@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Presupuestos{% endblock %} | SIG Intranet</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'presupuestos/css/presupuestos.css' %}">
+</head>
+<body class="panel-body">
+    <div class="header">
+        <h1>🧾 Presupuestos</h1>
+        <div class="user-info">
+            <a href="{% url 'presupuestos_lista' %}" class="header-link">Listado</a>
+            <a href="{% url 'presupuesto_nuevo' %}" class="header-link">+ Nuevo</a>
+            <a href="{% url 'panel' %}" class="header-link">Paneles</a>
+            <span>{{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div class="pres-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="pres-mensaje {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block contenido %}{% endblock %}
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

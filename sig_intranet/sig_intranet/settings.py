@@ -33,6 +33,7 @@ DEBUG = False
 # Configurar con las IPs/dominios permitidos en tu intranet
 ALLOWED_HOSTS = [
     'localhost',
+    '127.0.0.1',
     '172.16.0.13',
     # Agregar la IP del servidor, ejemplo:
     # '192.168.1.100',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'panel',  # Nuestra app
+    'presupuestos',  # Módulo de presupuestos
 ]
 
 MIDDLEWARE = [

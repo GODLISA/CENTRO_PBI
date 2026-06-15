@@ -1,0 +1,223 @@
+/* ============================================
+   MÓDULO PRESUPUESTOS
+   ============================================ */
+.pres-container {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 0 20px;
+}
+
+.header-link {
+    color: #cdd3e0;
+    text-decoration: none;
+    margin-right: 14px;
+    font-size: 14px;
+}
+.header-link:hover { color: #fff; }
+
+.pres-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.pres-toolbar h2 { color: #1a1a2e; }
+
+.btn-sec {
+    background: #e8ebf2;
+    color: #1a1a2e;
+    padding: 10px 16px;
+    font-size: 14px;
+}
+.btn-sec:hover { background: #d5dae6; }
+
+/* Mensajes */
+.pres-mensaje {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+.pres-mensaje.success { background: #e6f7ed; border: 1px solid #9fdcb8; color: #1b6e3c; }
+.pres-mensaje.error   { background: #fee;    border: 1px solid #fcc;    color: #c00; }
+.pres-mensaje.warning { background: #fff8e1; border: 1px solid #f3d98a; color: #8a6d1a; }
+
+/* Filtros */
+.pres-filtros {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.pres-filtros input[type="text"],
+.pres-filtros select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+.pres-filtros input[type="text"] { flex: 1; }
+
+/* Tabla */
+.pres-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+.pres-tabla th {
+    background: #1a1a2e;
+    color: #fff;
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 500;
+}
+.pres-tabla td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #eef0f4;
+}
+.pres-tabla tbody tr:hover { background: #f7f8fb; }
+.pres-tabla .num { text-align: right; }
+.pres-tabla tfoot td { font-weight: 600; background: #f2f4f7; }
+.pres-tabla .fila-total td { background: #1a1a2e; color: #fff; font-size: 15px; }
+.pres-tabla a { color: #16213e; font-weight: 600; }
+
+/* Estados */
+.estado {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+.estado-borrador  { background: #e8ebf2; color: #4a5568; }
+.estado-emitido   { background: #e3effd; color: #1d5ca8; }
+.estado-aceptado  { background: #e6f7ed; color: #1b6e3c; }
+.estado-rechazado { background: #fde8e8; color: #b32626; }
+
+/* Formulario */
+.pres-form fieldset {
+    background: #fff;
+    border: 1px solid #e2e6ee;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+}
+.pres-form legend {
+    font-weight: 600;
+    color: #1a1a2e;
+    padding: 0 8px;
+}
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 18px;
+}
+.campo-ancho { grid-column: 1 / -1; }
+.campo label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 4px;
+}
+.campo input, .campo select, .pres-form textarea {
+    width: 100%;
+    padding: 9px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+}
+.campo input:focus, .campo select:focus, .pres-form textarea:focus {
+    outline: none;
+    border-color: #16213e;
+}
+.ayuda { font-size: 12px; color: #888; margin: 6px 0; }
+
+/* Líneas dinámicas */
+#tabla-lineas input, #tabla-lineas select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+#tabla-lineas input.num { text-align: right; }
+.btn-quitar {
+    background: none;
+    border: none;
+    color: #b32626;
+    cursor: pointer;
+    font-size: 16px;
+}
+.acciones-lineas { display: flex; gap: 10px; margin: 10px 0; }
+
+/* Resumen en vivo */
+.pres-resumen {
+    margin-top: 14px;
+    margin-left: auto;
+    max-width: 320px;
+    background: #f7f8fb;
+    border: 1px solid #e2e6ee;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 14px;
+}
+.pres-resumen div {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+}
+.pres-resumen .total {
+    border-top: 2px solid #1a1a2e;
+    margin-top: 6px;
+    padding-top: 8px;
+    font-size: 16px;
+}
+
+.pres-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Detalle */
+.pres-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+.pres-card {
+    background: #fff;
+    border: 1px solid #e2e6ee;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 14px;
+    margin-bottom: 14px;
+}
+.pres-card h3 {
+    color: #1a1a2e;
+    font-size: 14px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+.pres-card p { margin: 3px 0; color: #444; }
+
+.pres-form-estado { display: flex; gap: 10px; }
+.pres-form-estado select {
+    padding: 9px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.pres-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: #888;
+}

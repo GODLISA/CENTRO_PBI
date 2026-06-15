@@ -10,6 +10,7 @@ import os
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('panel.urls')),
+    path('presupuestos/', include('presupuestos.urls')),
 ]
 
 # Servir archivos estáticos con DEBUG=False (válido para intranet)
