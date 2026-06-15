@@ -13,11 +13,14 @@ urlpatterns = [
     path('presupuestos/', include('presupuestos.urls')),
 ]
 
-# Servir archivos estáticos con DEBUG=False (válido para intranet)
+# Servir archivos estáticos y media con DEBUG=False (válido para intranet)
 # En producción con internet se usaría nginx/apache, pero en intranet esto es suficiente
 if not settings.DEBUG:
     urlpatterns += [
         path('static/<path:path>', serve, {
             'document_root': settings.STATIC_ROOT,
+        }),
+        path('media/<path:path>', serve, {
+            'document_root': settings.MEDIA_ROOT,
         }),
     ]

@@ -114,6 +114,7 @@ def _guardar_desde_post(request):
         comuna=comuna,
         distancia_km=distancia,
         validez_dias=int(post.get('validez_dias') or 30),
+        titulo_trabajo=(post.get('titulo_trabajo') or '').strip(),
         notas=(post.get('notas') or '').strip(),
         creado_por=request.user,
     )

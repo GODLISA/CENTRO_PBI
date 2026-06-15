@@ -12,7 +12,25 @@ servicio, con descarga en PDF. Forma parte de la intranet SIG (`/presupuestos/`)
 | **Zona** | Admin → Zonas | Zonas geográficas (Centro, Norte, Sur); permiten valores por km distintos. |
 | **Comuna** | Admin → Comunas (o inline en Zonas) | Comunas con km de traslado **ida + regreso**; autocompletan la distancia en el formulario. |
 | **Parámetros** | Admin → Parámetros / Valores de parámetros | Variables que cambian por fecha y/o zona: `UF`, `VALOR_KM`, `IVA`. |
-| **Configuración empresa/PDF** | Admin → Configuración de empresa / PDF | Datos de la empresa, condiciones comerciales y pie de página del PDF. |
+| **Configuración empresa/PDF** | Admin → Configuración de empresa / PDF | Datos PELP, textos de observaciones, condiciones y pie del PDF. |
+
+## Formato del PDF
+
+El PDF replica estrictamente el presupuesto PELP de referencia
+("PRESUPUESTO N°1888"): membrete PELP, caja **R.U.T. / PRESUPUESTO / N°**,
+referencia **(USD)** y **(UF)** del día, datos del cliente en grilla, barra
+verde de **ALCANCES / OBSERVACIONES** con el título del trabajo, tabla de
+detalle con encabezado gris (DETALLE · Valor Un.(\*) · Cantidad ·
+Subtotal(\*)), totales **TOTAL NETO / IVA 19% / TOTAL A PAGAR** en verde
+claro, nota "(\*) VALORES NO INCLUYEN IVA" y el pie de condiciones. Colores y
+fuente tomados del Excel original (verde accent3 `#9BBB59`, header gris
+`#D9D9D9`, Arial Narrow / Helvetica 10 pt). El membrete está en
+`static/presupuestos/img/pelp_membrete.png`; los textos (reenvío,
+aprobación, validez, condiciones) se editan en la Configuración de empresa.
+
+El dólar **(USD)** es referencial: lo carga `actualizar_uf` junto con la UF
+(mindicador.cl `/dolar`). Si falta, el PDF muestra "-" sin interrumpir el
+cálculo.
 
 ## Cómo funciona el versionado de valores
 

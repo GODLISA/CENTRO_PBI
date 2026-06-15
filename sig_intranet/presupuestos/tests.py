@@ -42,6 +42,7 @@ class BaseDatos(TestCase):
         )
 
         cargar_valor('UF', '38000', date(2026, 1, 1))
+        cargar_valor('USD', '900', date(2026, 1, 1))
         cargar_valor('VALOR_KM', '800', date(2026, 1, 1))                     # global
         cargar_valor('VALOR_KM', '1000', date(2026, 1, 1), zona=cls.zona_sur)  # zona sur
 
@@ -179,6 +180,25 @@ class PdfTests(BaseDatos):
         contenido = generar_pdf_presupuesto(presupuesto)
         self.assertTrue(contenido.startswith(b'%PDF'))
         self.assertGreater(len(contenido), 1000)
+
+    def test_snapshot_usd_referencial(self):
+        presupuesto = self.crear_presupuesto()
+        services.calcular_presupuesto(
+            presupuesto, [{'item_id': self.item_clp.pk, 'cantidad': '1'}]
+        )
+        presupuesto.refresh_from_db()
+        self.assertEqual(presupuesto.valor_usd, Decimal('900'))
+
+    def test_pdf_funciona_sin_usd(self):
+        # Si el dólar no está cargado, el cálculo y el PDF no fallan
+        ValorParametro.objects.filter(parametro__codigo='USD').delete()
+        presupuesto = self.crear_presupuesto()
+        services.calcular_presupuesto(
+            presupuesto, [{'item_id': self.item_clp.pk, 'cantidad': '1'}]
+        )
+        presupuesto.refresh_from_db()
+        self.assertIsNone(presupuesto.valor_usd)
+        self.assertTrue(generar_pdf_presupuesto(presupuesto).startswith(b'%PDF'))
 
 
 class VistasTests(BaseDatos):

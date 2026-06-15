@@ -82,6 +82,14 @@ def calcular_presupuesto(presupuesto, lineas):
 
     porcentaje_iva, _ = valor_parametro(Parametro.COD_IVA, fecha=fecha)
 
+    # USD es referencial (aparece en el encabezado del PDF); si no está cargado
+    # no se interrumpe el cálculo.
+    valor_usd = None
+    try:
+        valor_usd, _ = valor_parametro(Parametro.COD_USD, fecha=fecha)
+    except ValidationError:
+        valor_usd = None
+
     # --- Construcción del detalle ---
     presupuesto.detalles.all().delete()
     subtotal = CERO
@@ -148,6 +156,7 @@ def calcular_presupuesto(presupuesto, lineas):
     monto_iva = _a_clp(subtotal * porcentaje_iva / Decimal('100'))
 
     presupuesto.valor_uf = valor_uf
+    presupuesto.valor_usd = valor_usd
     presupuesto.valor_km = valor_km
     presupuesto.porcentaje_iva = porcentaje_iva
     presupuesto.costo_traslado = costo_traslado

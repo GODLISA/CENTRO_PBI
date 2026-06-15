@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.html import format_html
 
 from .models import (
     AreaServicio,
@@ -104,6 +105,32 @@ class ValorParametroAdmin(admin.ModelAdmin):
 
 @admin.register(ConfiguracionEmpresa)
 class ConfiguracionEmpresaAdmin(admin.ModelAdmin):
+    readonly_fields = ('vista_previa_logo',)
+    fieldsets = (
+        ('Datos de la empresa', {
+            'fields': ('nombre', 'rut', 'giro', 'direccion', 'telefono', 'email'),
+        }),
+        ('Logo / membrete del PDF', {
+            'fields': ('logo', 'vista_previa_logo', 'logo_alto_mm', 'mostrar_logo'),
+            'description': 'Sube aquí el logo de la empresa. Si lo dejas vacío, '
+                           'se usa el membrete PELP por defecto. Ajusta "Alto del '
+                           'logo" si se ve grande o chico.',
+        }),
+        ('Textos del PDF', {
+            'fields': ('texto_reenvio', 'nota_aprobacion', 'validez_texto',
+                       'condiciones', 'pie_pagina'),
+        }),
+    )
+
+    @admin.display(description='Vista previa')
+    def vista_previa_logo(self, obj):
+        if obj and obj.logo:
+            return format_html(
+                '<img src="{}" style="max-height:120px;max-width:400px;'
+                'border:1px solid #ddd;padding:4px;" />', obj.logo.url
+            )
+        return 'Sin logo subido (se usa el membrete PELP por defecto).'
+
     def has_add_permission(self, request):
         # Singleton: solo permitir crear si aún no existe
         return not ConfiguracionEmpresa.objects.exists()

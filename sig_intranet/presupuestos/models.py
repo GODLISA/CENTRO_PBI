@@ -137,6 +137,7 @@ class Parametro(models.Model):
 
     # Códigos usados por el motor de cálculo
     COD_UF = 'UF'
+    COD_USD = 'USD'
     COD_VALOR_KM = 'VALOR_KM'
     COD_IVA = 'IVA'
 
@@ -225,20 +226,58 @@ class ConfiguracionEmpresa(models.Model):
     Datos de la empresa y textos del PDF. Singleton: existe un solo registro,
     editable en admin (la "matriz" de presentación del presupuesto).
     """
-    nombre = models.CharField(max_length=200, default='Mi Empresa')
-    rut = models.CharField(max_length=20, blank=True)
-    giro = models.CharField(max_length=200, blank=True)
-    direccion = models.CharField(max_length=255, blank=True)
-    telefono = models.CharField(max_length=50, blank=True)
+    nombre = models.CharField(max_length=200, default='PELP INTERNACIONAL S.A.')
+    rut = models.CharField(max_length=20, blank=True, default='96.501.840-9')
+    giro = models.CharField(
+        max_length=200, blank=True,
+        default='IMPORTACIÓN Y EXPORTACIÓN DE TODA CLASE DE BIENES MUEBLES'
+    )
+    direccion = models.CharField(max_length=255, blank=True, default='EL ROSAL 4560 – HUECHURABA, SANTIAGO – CHILE')
+    telefono = models.CharField(
+        max_length=120, blank=True,
+        default='MESA CENTRAL: (2) 2870 – 4300 · SERVICIO TÉCNICO: (2) 2870 – 4350'
+    )
     email = models.EmailField(blank=True)
+    logo = models.ImageField(
+        upload_to='presupuestos/logo/', blank=True, null=True,
+        help_text='Logo/membrete que aparece en el encabezado del PDF. '
+                  'Recomendado: PNG horizontal. Si se deja vacío se usa el '
+                  'membrete PELP por defecto.'
+    )
+    logo_alto_mm = models.PositiveSmallIntegerField(
+        default=22,
+        help_text='Altura del logo en el PDF, en milímetros (el ancho se ajusta '
+                  'solo). Sube o baja este número si el logo se ve grande o chico. '
+                  'Referencia: 22 mm ≈ tamaño de un logo de esquina.'
+    )
+    mostrar_logo = models.BooleanField(
+        default=True, help_text='Mostrar el membrete/logo en el encabezado del PDF'
+    )
+    texto_reenvio = models.TextField(
+        blank=True,
+        default=(
+            'Para dar ejecución al presente trabajo, se debe reenviar esta cotización '
+            'firmada y timbrada autorizando expresamente por correo electrónico\n'
+            ' a:  Pmellado@pelp.cl; Daphne.tello@pelp.cl; Catalina.riquelme@pelp.cl'
+        ),
+        help_text='Texto bajo el detalle de observaciones (reenvío/autorización)'
+    )
+    nota_aprobacion = models.CharField(
+        max_length=255, blank=True,
+        default='*Servicio Sujeto a Aprobación del Área de Cobranzas de PELP Int.'
+    )
+    validez_texto = models.CharField(
+        max_length=120, blank=True, default='Validez el presupuesto 30 días'
+    )
     condiciones = models.TextField(
         blank=True,
         default=(
-            'Validez del presupuesto: 30 días desde su emisión.\n'
-            'Forma de pago: según acuerdo comercial.\n'
-            'Valores en pesos chilenos. UF convertida al valor del día de emisión.'
+            '* El presente presupuesto está sujeto a variación según las condiciones que se encuentren en terreno\n'
+            '* Repuestos sujetos a stock\n'
+            '* Garantía 30 días por repuesto cambiado, no incluye traslado de técnico o viatico.\n'
+            '* Defectos por fallas eléctricas causadas por condiciones externas al equipo no están cubiertas por garantías.'
         ),
-        help_text='Condiciones comerciales que aparecen al pie del PDF (una por línea)'
+        help_text='Condiciones al pie del PDF (una por línea)'
     )
     pie_pagina = models.CharField(
         max_length=255, blank=True,
@@ -309,6 +348,10 @@ class Presupuesto(models.Model):
         max_digits=14, decimal_places=4, null=True, blank=True,
         help_text='Valor UF usado en el cálculo (snapshot)'
     )
+    valor_usd = models.DecimalField(
+        max_digits=14, decimal_places=4, null=True, blank=True,
+        help_text='Valor USD a la fecha de emisión (snapshot, referencial)'
+    )
     valor_km = models.DecimalField(
         max_digits=14, decimal_places=4, null=True, blank=True,
         help_text='Valor CLP/km usado en el cálculo (snapshot)'
@@ -322,7 +365,11 @@ class Presupuesto(models.Model):
     total = models.DecimalField(max_digits=14, decimal_places=0, default=0)
 
     validez_dias = models.PositiveIntegerField(default=30)
-    notas = models.TextField(blank=True, help_text='Notas internas u observaciones para el cliente')
+    titulo_trabajo = models.CharField(
+        max_length=200, blank=True,
+        help_text='Título del trabajo en la barra verde de observaciones (ej: "VISITA TECNICA MERRYCHEF E1S"). Si se deja vacío usa el nombre del área.'
+    )
+    notas = models.TextField(blank=True, help_text='Observaciones adicionales para el cliente')
 
     creado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT,

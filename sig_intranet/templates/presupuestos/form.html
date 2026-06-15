@@ -115,7 +115,16 @@
 
     <fieldset>
         <legend>Observaciones</legend>
-        <textarea name="notas" rows="3" placeholder="Observaciones que aparecerán en el PDF (opcional)">{{ datos.notas|default:'' }}</textarea>
+        <div class="campo campo-ancho">
+            <label>Título del trabajo (barra verde del PDF)</label>
+            <input type="text" name="titulo_trabajo" maxlength="200"
+                   placeholder="Ej: VISITA TECNICA MERRYCHEF E1S (si se deja vacío usa el área)"
+                   value="{{ datos.titulo_trabajo|default:'' }}">
+        </div>
+        <div class="campo campo-ancho">
+            <label>Observaciones adicionales</label>
+            <textarea name="notas" rows="3" placeholder="Observaciones que aparecerán bajo el título (opcional)">{{ datos.notas|default:'' }}</textarea>
+        </div>
     </fieldset>
 
     <input type="hidden" name="lineas_json" id="lineas-json">
