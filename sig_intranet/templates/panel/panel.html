@@ -17,6 +17,7 @@
             </button>
             {% endif %}
             <a href="{% url 'presupuestos_lista' %}" class="logout-btn" title="Módulo de presupuestos">🧾 Presupuestos</a>
+            <a href="{% url 'inventarios_stock_repuestos' %}" class="logout-btn" title="Módulo de inventarios">📦 Inventarios</a>
             <span>{{ user.username }}</span>
             <a href="{% url 'logout' %}" class="logout-btn">Cerrar Sesión</a>
         </div>

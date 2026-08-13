@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'panel',  # Nuestra app
     'presupuestos',  # Módulo de presupuestos
+    'inventarios',  # Módulo de inventarios (stock de repuestos)
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,28 @@ SESSION_COOKIE_AGE = 1209600
 # ============================================
 API_BASE_URL = os.environ.get('API_BASE_URL', '')
 API_BASE_TOKEN = os.environ.get('API_BASE_TOKEN', '')
+
+# ============================================
+# INVENTARIOS - Conexión SQL Server (StockRepuestos)
+# ============================================
+SQL_SERVER = os.environ.get('SQL_SERVER', '')
+SQL_PORT = os.environ.get('SQL_PORT', '')
+SQL_DATABASE = os.environ.get('SQL_DATABASE', '')
+SQL_USER = os.environ.get('SQL_USER', '')
+SQL_PASSWORD = os.environ.get('SQL_PASSWORD', '')
+
+# Vacío = el módulo detecta el mejor driver ODBC instalado
+SQL_DRIVER = os.environ.get('SQL_DRIVER', '')
+SQL_TRUST_CERT = os.environ.get('SQL_TRUST_CERT', 'yes')
+SQL_ENCRYPT = os.environ.get('SQL_ENCRYPT', 'no')
+
+try:
+    SQL_TIMEOUT = int(os.environ.get('SQL_TIMEOUT', '30'))
+except ValueError:
+    SQL_TIMEOUT = 30
+
+# Carpeta donde se dejan los PDF generados (relativa a BASE_DIR si no es absoluta)
+_output_dir = os.environ.get('OUTPUT_DIR', 'PDF_StockRepuestos').strip()
+INVENTARIOS_OUTPUT_DIR = (
+    Path(_output_dir) if os.path.isabs(_output_dir) else BASE_DIR / _output_dir
+)

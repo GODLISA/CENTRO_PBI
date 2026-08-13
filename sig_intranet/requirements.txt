@@ -1,2 +1,6 @@
 Django>=4.2,<5.0
 waitress>=3.0
+# Generación de PDF (módulos presupuestos e inventarios)
+reportlab>=4.0
+# Conexión ODBC a SQL Server (módulo inventarios / StockRepuestos)
+pyodbc>=5.0

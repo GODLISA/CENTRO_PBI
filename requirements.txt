@@ -3,3 +3,5 @@ Django>=6.0.6,<6.1
 reportlab>=4.0
 # openpyxl solo se necesita para re-extraer la matriz desde Excel (data/extraer_matriz_excel.py)
 openpyxl>=3.1
+# pyodbc: módulo inventarios (lectura de StockRepuestos en SQL Server)
+pyodbc>=5.0

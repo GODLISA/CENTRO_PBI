@@ -1,0 +1,70 @@
+{% extends 'inventarios/base.html' %}
+
+{% block titulo %}Stock de repuestos por bodega{% endblock %}
+
+{% block contenido %}
+<div class="inv-toolbar">
+    <h2>Stock de repuestos por bodega</h2>
+    <form method="post" action="{% url 'inventarios_stock_zip' %}">
+        {% csrf_token %}
+        <input type="hidden" name="incluir_vacias" value="{% if incluir_vacias %}1{% else %}0{% endif %}">
+        <button type="submit" class="btn" {% if error or not resumen %}disabled{% endif %}>
+            ⬇️ Descargar todos los PDF (.zip)
+        </button>
+    </form>
+</div>
+
+{% if error %}
+    <div class="inv-mensaje error">{{ error }}</div>
+{% endif %}
+
+<form method="get" class="inv-filtros">
+    <label>
+        <input type="checkbox" name="incluir_vacias" value="1" {% if incluir_vacias %}checked{% endif %}>
+        Incluir bodegas sin stock (genera un PDF con aviso)
+    </label>
+    <button type="submit" class="btn btn-sec">Aplicar</button>
+</form>
+
+{% if resumen %}
+<div class="inv-resumen">
+    <span><strong>{{ totales.bodegas }}</strong> bodegas</span>
+    <span><strong>{{ totales.repuestos }}</strong> repuestos con stock</span>
+    <span><strong>{{ totales.unidades }}</strong> unidades</span>
+</div>
+
+<table class="inv-tabla">
+    <thead>
+        <tr>
+            <th>Bodega</th>
+            <th class="num">Repuestos</th>
+            <th class="num">Unidades</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for fila in resumen %}
+        <tr>
+            <td>{{ fila.bodega }}</td>
+            <td class="num">{{ fila.repuestos }}</td>
+            <td class="num">{{ fila.unidades }}</td>
+            <td>
+                <a href="{% url 'inventarios_stock_pdf' %}?bodega={{ fila.bodega|urlencode:'' }}"
+                   target="_blank" title="Ver PDF de la bodega">📄 PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p class="inv-nota">
+    Al descargar el ZIP también se deja una copia de los PDF en el servidor:
+    <code>{{ carpeta_salida }}</code>
+</p>
+{% elif not error %}
+<div class="inv-vacio">
+    <h3>Sin repuestos con stock</h3>
+    <p>La tabla StockRepuestos no tiene filas con STOCK mayor a 0.</p>
+</div>
+{% endif %}
+{% endblock %}

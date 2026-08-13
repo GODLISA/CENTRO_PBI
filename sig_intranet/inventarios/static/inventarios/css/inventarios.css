@@ -1,0 +1,114 @@
+/* ============================================
+   MÓDULO INVENTARIOS
+   ============================================ */
+.inv-container {
+    max-width: 1100px;
+    margin: 24px auto;
+    padding: 0 20px;
+}
+
+.header-link {
+    color: #cdd3e0;
+    text-decoration: none;
+    margin-right: 14px;
+    font-size: 14px;
+}
+.header-link:hover { color: #fff; }
+
+.inv-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.inv-toolbar h2 { color: #1a1a2e; }
+
+.btn-sec {
+    background: #e8ebf2;
+    color: #1a1a2e;
+    padding: 10px 16px;
+    font-size: 14px;
+}
+.btn-sec:hover { background: #d5dae6; }
+
+.btn:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+/* Mensajes */
+.inv-mensaje {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+.inv-mensaje.success { background: #e6f7ed; border: 1px solid #9fdcb8; color: #1b6e3c; }
+.inv-mensaje.error   { background: #fee;    border: 1px solid #fcc;    color: #c00; }
+.inv-mensaje.warning { background: #fff8e1; border: 1px solid #f3d98a; color: #8a6d1a; }
+
+/* Filtros */
+.inv-filtros {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #444;
+}
+
+/* Resumen */
+.inv-resumen {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    color: #444;
+}
+.inv-resumen strong { color: #1a1a2e; font-size: 16px; }
+
+/* Tabla */
+.inv-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+    font-size: 14px;
+}
+.inv-tabla th,
+.inv-tabla td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+    text-align: left;
+}
+.inv-tabla th {
+    background: #1a1a2e;
+    color: #fff;
+    font-weight: 600;
+}
+.inv-tabla td.num,
+.inv-tabla th.num { text-align: right; }
+.inv-tabla tbody tr:hover { background: #f7f8fb; }
+.inv-tabla a { color: #1a1a2e; text-decoration: none; }
+.inv-tabla a:hover { text-decoration: underline; }
+
+.inv-nota {
+    margin-top: 14px;
+    font-size: 13px;
+    color: #666;
+}
+.inv-nota code {
+    background: #eef0f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+.inv-vacio {
+    background: #fff;
+    padding: 40px;
+    text-align: center;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+.inv-vacio h3 { color: #1a1a2e; margin-bottom: 8px; }
+.inv-vacio p { color: #666; font-size: 14px; }
