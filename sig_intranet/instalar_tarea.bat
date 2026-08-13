@@ -19,10 +19,13 @@ if %errorLevel% neq 0 (
     exit /b 1
 )
 
+REM --- Configuracion: ajustar APP_DIR si el proyecto cambia de carpeta ---
+REM Se usa "python.exe -m waitress" en vez de "waitress-serve.exe" porque los
+REM lanzadores .exe del venv se rompen si la carpeta del proyecto se mueve.
 set TAREA=SIGIntranet
-set WAITRESS=C:\Tareas\CENTRO_PBI\sig_intranet\venv\Scripts\waitress-serve.exe
-set APP_DIR=C:\Tareas\CENTRO_PBI\sig_intranet
-set ARGS=--listen=0.0.0.0:8000 --threads=4 sig_intranet.wsgi:application
+set APP_DIR=C:\Tareas\SIGPOWERBI\CENTRO_PBI\sig_intranet
+set WAITRESS=%APP_DIR%\venv\Scripts\python.exe
+set ARGS=-m waitress --listen=0.0.0.0:8000 --threads=4 sig_intranet.wsgi:application
 
 REM --- Eliminar tarea si ya existe ---
 schtasks /delete /tn "%TAREA%" /f 2>nul

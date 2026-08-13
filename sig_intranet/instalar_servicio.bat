@@ -28,11 +28,14 @@ if %errorLevel% neq 0 (
 )
 
 REM --- Configuración ---
+REM --- Configuracion: ajustar APP_DIR si el proyecto cambia de carpeta ---
+REM Se usa "python.exe -m waitress" en vez de "waitress-serve.exe" porque los
+REM lanzadores .exe del venv se rompen si la carpeta del proyecto se mueve.
 set SERVICIO=SIGIntranet
 set NSSM_PATH=C:\nssm\nssm.exe
-set WAITRESS_EXE=C:\Tareas\CENTRO_PBI\sig_intranet\venv\Scripts\waitress-serve.exe
-set APP_DIR=C:\Tareas\CENTRO_PBI\sig_intranet
-set APP_ARGS=--listen=0.0.0.0:8000 --threads=4 sig_intranet.wsgi:application
+set APP_DIR=C:\Tareas\SIGPOWERBI\CENTRO_PBI\sig_intranet
+set WAITRESS_EXE=%APP_DIR%\venv\Scripts\python.exe
+set APP_ARGS=-m waitress --listen=0.0.0.0:8000 --threads=4 sig_intranet.wsgi:application
 
 REM --- Verificar que NSSM existe ---
 if not exist "%NSSM_PATH%" (
@@ -45,10 +48,10 @@ if not exist "%NSSM_PATH%" (
     exit /b 1
 )
 
-REM --- Verificar que waitress existe ---
+REM --- Verificar que el python del venv existe ---
 if not exist "%WAITRESS_EXE%" (
-    echo [ERROR] No se encontro waitress-serve.exe
-    echo Ejecuta: venv\Scripts\pip install waitress
+    echo [ERROR] No se encontro python.exe en %WAITRESS_EXE%
+    echo Revisa APP_DIR o recrea el venv: py -m venv venv
     pause
     exit /b 1
 )
