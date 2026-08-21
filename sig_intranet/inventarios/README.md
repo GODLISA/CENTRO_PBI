@@ -2,7 +2,7 @@
 
 Menú independiente (`/inventarios/`) que lee la tabla **StockRepuestos** de SQL Server,
 agrupa por `BODEGA` considerando solo `STOCK > 0` y genera un PDF por bodega con las
-columnas `COD_SAP` y `STOCK`.
+columnas `COD_SAP`, `DESCRIPCIÓN` y `STOCK`.
 
 Es la versión web del script `stock_repuestos_pdf.py`: misma consulta, mismo formato de
 PDF, pero integrado a la intranet y con **descarga de todos los PDF en un único .zip**.
@@ -19,6 +19,7 @@ SQL_DATABASE=NombreBaseDatos
 SQL_USER=usuario_lectura
 SQL_PASSWORD=cambiar_esta_clave
 SQL_DRIVER=
+SQL_COL_DESCRIPCION=
 SQL_TRUST_CERT=yes
 SQL_ENCRYPT=no
 SQL_TIMEOUT=30
@@ -26,6 +27,11 @@ OUTPUT_DIR=PDF_StockRepuestos
 ```
 
 - `SQL_DRIVER` vacío → el módulo detecta el driver ODBC más nuevo instalado.
+- `SQL_COL_DESCRIPCION` vacío → se autodetecta la columna de descripción entre
+  `DESCRIPCION`, `DESCRIPCIÓN`, `DESC_SAP`, `DESCRIPCION_SAP`, `DESCRIPCION_ARTICULO`,
+  `NOMBRE_ARTICULO`, `MATERIAL_DESC`, `TEXTO_BREVE`, `DETALLE`, `GLOSA`, `ARTICULO`,
+  `NOMBRE` y `DESC`. Si la tabla usa otro nombre, indíquelo aquí. Si no hay ninguna,
+  el PDF sale con el formato original de dos columnas.
 - `OUTPUT_DIR` relativo se resuelve desde `sig_intranet/`.
 - El `.env` se parsea línea a línea: **sin comillas** y **sin comentarios al final de la línea**.
 

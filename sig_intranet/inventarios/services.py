@@ -23,6 +23,26 @@ from .pdf import generar_pdf_bodega, generar_pdf_bodega_vacia
 QUERY = 'select * from StockRepuestos;'
 COLUMNAS_REQUERIDAS = ('BODEGA', 'COD_SAP', 'STOCK')
 
+# Posibles nombres de la columna con la descripción del artículo. Como la
+# consulta es "select *", se detecta la primera que exista; se puede forzar
+# una en particular con SQL_COL_DESCRIPCION en el .env.
+COLUMNAS_DESCRIPCION = (
+    'DESCRIPCION',
+    'DESCRIPCIÓN',
+    'DESC_SAP',
+    'DESCRIPCION_SAP',
+    'DESCRIPCION_ARTICULO',
+    'NOMBRE_ARTICULO',
+    'MATERIAL_DESC',
+    'TEXTO_BREVE',
+    'DETALLE',
+    'GLOSA',
+    'ARTICULO',
+    'ARTÍCULO',
+    'NOMBRE',
+    'DESC',
+)
+
 # Drivers ODBC de SQL Server, del más nuevo al más antiguo
 DRIVERS_PREFERIDOS = (
     'ODBC Driver 18 for SQL Server',
@@ -146,19 +166,50 @@ def nombre_archivo_seguro(texto):
     return limpio[:120] or 'SIN_BODEGA'
 
 
+def detectar_columna_descripcion(filas):
+    """
+    Devuelve el nombre real de la columna con la descripción del artículo,
+    o None si la tabla no trae ninguna. Respeta SQL_COL_DESCRIPCION del .env.
+    """
+    if not filas:
+        return None
+    columnas = list(filas[0].keys())
+    mapa = {c.strip().upper(): c for c in columnas}
+
+    forzada = (getattr(settings, 'SQL_COL_DESCRIPCION', '') or '').strip()
+    if forzada:
+        if forzada.upper() in mapa:
+            return mapa[forzada.upper()]
+        raise InventarioError(
+            f'La columna SQL_COL_DESCRIPCION="{forzada}" no existe en StockRepuestos. '
+            f'Columnas disponibles: {", ".join(columnas)}'
+        )
+
+    for candidata in COLUMNAS_DESCRIPCION:
+        if candidata in mapa:
+            return mapa[candidata]
+    return None
+
+
 def agrupar_por_bodega(filas, incluir_vacias=False):
     """
     Agrupa las filas por BODEGA considerando solo STOCK > 0.
+    Cada ítem queda con COD_SAP, DESCRIPCION y STOCK (la descripción queda
+    vacía si la tabla no trae una columna reconocible).
     Con `incluir_vacias` se agregan las bodegas sin stock con una lista vacía.
     """
+    col_desc = detectar_columna_descripcion(filas)
+
     grupos = defaultdict(list)
     for fila in filas:
         stock = a_entero(fila.get('STOCK'))
         if stock <= 0:
             continue
         bodega = (fila.get('BODEGA') or 'SIN BODEGA').strip()
+        descripcion = str(fila.get(col_desc) or '').strip() if col_desc else ''
         grupos[bodega].append({
             'COD_SAP': (fila.get('COD_SAP') or '').strip(),
+            'DESCRIPCION': descripcion,
             'STOCK': stock,
         })
     for bodega in grupos:

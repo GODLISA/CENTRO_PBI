@@ -173,6 +173,10 @@ SQL_DRIVER = os.environ.get('SQL_DRIVER', '')
 SQL_TRUST_CERT = os.environ.get('SQL_TRUST_CERT', 'yes')
 SQL_ENCRYPT = os.environ.get('SQL_ENCRYPT', 'no')
 
+# Columna con la descripción del artículo en StockRepuestos.
+# Vacío = el módulo la autodetecta (DESCRIPCION, DETALLE, NOMBRE, etc.)
+SQL_COL_DESCRIPCION = os.environ.get('SQL_COL_DESCRIPCION', '')
+
 try:
     SQL_TIMEOUT = int(os.environ.get('SQL_TIMEOUT', '30'))
 except ValueError:

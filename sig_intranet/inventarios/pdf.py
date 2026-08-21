@@ -2,8 +2,13 @@
 Generación del PDF de stock por bodega con ReportLab.
 
 Mismo formato del script original `stock_repuestos_pdf.py` (título con el
-nombre de la bodega, subtítulo con totales y tabla COD_SAP / STOCK), pero
-devolviendo bytes en memoria para servirlos por HTTP o comprimirlos.
+nombre de la bodega, subtítulo con totales y tabla de artículos), pero
+agregando la descripción del artículo junto al código, y devolviendo bytes en
+memoria para servirlos por HTTP o comprimirlos.
+
+La columna DESCRIPCIÓN solo se dibuja si los ítems traen descripción; si la
+tabla StockRepuestos no tiene una columna reconocible, el PDF mantiene el
+formato original de dos columnas (COD_SAP / STOCK).
 """
 import io
 from datetime import datetime
@@ -21,6 +26,10 @@ GRIS_BORDE = colors.HexColor('#B4B4B4')
 GRIS_TEXTO = colors.HexColor('#555555')
 
 AUTOR = 'Grupo Pelp - Control de Inventarios'
+
+# Ancho útil de la hoja A4 con los márgenes de 20 mm: 170 mm
+ANCHOS_CON_DESC = [32 * mm, 113 * mm, 25 * mm]
+ANCHOS_SIN_DESC = [95 * mm, 35 * mm]
 
 
 def _estilos():
@@ -41,7 +50,16 @@ def _estilos():
         textColor=GRIS_TEXTO,
         alignment=TA_CENTER,
     )
-    return base, titulo, sub
+    # Las descripciones son largas: se usa Paragraph para que corten en varias
+    # líneas dentro de la celda en vez de desbordar la columna.
+    celda = ParagraphStyle(
+        'CeldaDescripcion',
+        parent=base['Normal'],
+        fontName='Helvetica',
+        fontSize=8.5,
+        leading=10,
+    )
+    return base, titulo, sub, celda
 
 
 def _documento(buffer, bodega):
@@ -57,25 +75,46 @@ def _documento(buffer, bodega):
     )
 
 
-def generar_pdf_bodega(bodega, items):
-    """PDF de una bodega: título + tabla COD_SAP / STOCK. Devuelve bytes."""
-    base, estilo_titulo, estilo_sub = _estilos()
+def _tabla_articulos(items, estilo_celda):
+    """Table de ReportLab con o sin la columna DESCRIPCIÓN según los datos."""
+    con_descripcion = any((i.get('DESCRIPCION') or '').strip() for i in items)
 
-    datos = [['COD_SAP', 'STOCK']] + [[i['COD_SAP'], str(i['STOCK'])] for i in items]
-    tabla = Table(datos, colWidths=[95 * mm, 35 * mm], repeatRows=1, hAlign='CENTER')
+    if con_descripcion:
+        datos = [['COD_SAP', 'DESCRIPCIÓN', 'STOCK']]
+        for i in items:
+            datos.append([
+                i['COD_SAP'],
+                Paragraph((i.get('DESCRIPCION') or '').strip() or '-', estilo_celda),
+                str(i['STOCK']),
+            ])
+        anchos = ANCHOS_CON_DESC
+        col_stock = 2
+    else:
+        datos = [['COD_SAP', 'STOCK']]
+        datos += [[i['COD_SAP'], str(i['STOCK'])] for i in items]
+        anchos = ANCHOS_SIN_DESC
+        col_stock = 1
+
+    tabla = Table(datos, colWidths=anchos, repeatRows=1, hAlign='CENTER')
     tabla.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), AZUL_HEADER),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
         ('FONTSIZE', (0, 0), (-1, -1), 9.5),
-        ('ALIGN', (1, 0), (1, -1), 'CENTER'),
+        ('ALIGN', (col_stock, 0), (col_stock, -1), 'CENTER'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
         ('GRID', (0, 0), (-1, -1), 0.4, GRIS_BORDE),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, AZUL_FILA]),
     ]))
+    return tabla
+
+
+def generar_pdf_bodega(bodega, items):
+    """PDF de una bodega: título + tabla de artículos. Devuelve bytes."""
+    base, estilo_titulo, estilo_sub, estilo_celda = _estilos()
 
     total = sum(i['STOCK'] for i in items)
     marca = datetime.now().strftime('%d-%m-%Y %H:%M')
@@ -88,14 +127,14 @@ def generar_pdf_bodega(bodega, items):
             estilo_sub,
         ),
         Spacer(1, 6 * mm),
-        tabla,
+        _tabla_articulos(items, estilo_celda),
     ])
     return buffer.getvalue()
 
 
 def generar_pdf_bodega_vacia(bodega):
     """PDF de aviso para bodegas sin repuestos con stock. Devuelve bytes."""
-    base, estilo_titulo, estilo_sub = _estilos()
+    base, estilo_titulo, estilo_sub, _ = _estilos()
     marca = datetime.now().strftime('%d-%m-%Y %H:%M')
 
     buffer = io.BytesIO()
