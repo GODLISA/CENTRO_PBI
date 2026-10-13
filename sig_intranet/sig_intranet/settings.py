@@ -34,11 +34,9 @@ DEBUG = False
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '172.16.0.13',
-    # Agregar la IP del servidor, ejemplo:
-    # '192.168.1.100',
-    # O un rango completo con comodín:
-    # '.midominio.local',
+    '192.168.1.100',  # IP de tu servidor
+    # O para permitir toda la subred:
+    # '.tudominio.local',
 ]
 
 # Application definition
@@ -52,6 +50,7 @@ INSTALLED_APPS = [
     'panel',  # Nuestra app
     'presupuestos',  # Módulo de presupuestos
     'inventarios',  # Módulo de inventarios (stock de repuestos)
+    'tareas',  # Módulo de tareas (tablero de objetivos en burbujas)
 ]
 
 MIDDLEWARE = [
@@ -85,10 +84,15 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sig_intranet.wsgi.application'
 
 # Database - SQLite por defecto
+# OPTIONS.timeout: espera hasta 20s si la BD está bloqueada (concurrencia del
+# polling del módulo tareas bajo waitress). WAL se activa en tareas/apps.py.
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,
+        },
     }
 }
 

@@ -140,6 +140,102 @@ body {
 }
 
 /* ============================================
+   NAV UNIFICADA - Barra común de toda la intranet
+   ============================================ */
+.app-body {
+    background: #f0f2f5;
+    min-height: 100vh;
+}
+
+.nav {
+    background: #1a1a2e;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 0 18px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.nav-brand {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+.nav-brand span {
+    font-weight: 400;
+    opacity: 0.65;
+}
+
+.nav-links {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+.nav-link {
+    color: #c9ced9;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 7px 13px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+}
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-weight: 600;
+}
+
+.nav-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.nav-username {
+    color: #c9ced9;
+}
+.nav-logout {
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 5px 12px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.nav-logout:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 760px) {
+    .nav {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 8px 12px;
+        gap: 10px;
+    }
+    .nav-links {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+/* ============================================
    PANEL - Lista de paneles
    ============================================ */
 .panel-body {

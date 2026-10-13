@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Tareas | SIG Intranet{% endblock %}
+{% block body_class %}tareas-body{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'tareas/css/tareas.css' %}">
+    <!-- Cytoscape.js (MIT), servido desde /static para la intranet (offline) -->
+    <script src="{% static 'tareas/vendor/cytoscape.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    <!-- Barra de herramientas del tablero -->
+    <div class="tb-toolbar">
+        <div class="tb-toolbar-left">
+            <button id="btn-nuevo-objetivo" class="tb-btn tb-btn-primary">Nuevo objetivo</button>
+            <button id="btn-reordenar" class="tb-btn" title="Reacomoda por peso (la más grande al centro)">Reordenar</button>
+            <button id="btn-ajustar" class="tb-btn" title="Centrar y ajustar el zoom">Ajustar vista</button>
+        </div>
+        <div class="tb-toolbar-right">
+            <span class="tb-sync" id="tb-sync" title="Los cambios de otros aparecen automáticamente"></span>
+        </div>
+    </div>
+
+    <div class="tb-stage">
+        <!-- Lienzo de burbujas -->
+        <div id="cy"></div>
+        <!-- Capa de burbujas (vidrio + líquido) sincronizada con el lienzo -->
+        <div id="tb-overlay-layer" class="tb-overlay-layer"></div>
+
+        <!-- Leyenda -->
+        <div class="tb-legend" id="tb-legend">
+            <div class="tb-legend-title">Leyenda <button id="btn-legend-toggle" class="tb-legend-toggle" title="Ocultar/mostrar">–</button></div>
+            <div class="tb-legend-body">
+                <div class="tb-legend-row"><span class="dot" style="background:#64748b"></span> Pendiente</div>
+                <div class="tb-legend-row"><span class="dot" style="background:#3498db"></span> En curso</div>
+                <div class="tb-legend-row"><span class="dot" style="background:#0d7c3d"></span> Completado</div>
+                <div class="tb-legend-row"><span class="dot" style="background:#c0392b"></span> Bloqueado</div>
+                <hr>
+                <div class="tb-legend-row"><span class="ln ln-block"></span> Dependencia bloqueante</div>
+                <div class="tb-legend-row"><span class="ln ln-soft"></span> Dependencia (no bloquea)</div>
+                <div class="tb-legend-row"><span class="ln ln-priv"></span> Hacia tarea privada</div>
+                <hr>
+                <div class="tb-legend-note">El tamaño de la burbuja = nº de tareas (×1) + subtareas (×0,1). Se va llenando con el % completado.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel lateral de detalle / edición -->
+    <aside id="panel-lateral" class="tb-panel is-hidden" aria-hidden="true">
+        <div class="tb-panel-head">
+            <div id="pl-titulo-wrap" class="tb-panel-title-wrap"></div>
+            <button id="pl-cerrar" class="tb-panel-close" title="Cerrar">&times;</button>
+        </div>
+        <div id="pl-cuerpo" class="tb-panel-body"></div>
+    </aside>
+
+    <!-- Overlay de fondo para el panel -->
+    <div id="tb-overlay" class="tb-overlay is-hidden"></div>
+
+    <!-- Modal genérico (nuevo objetivo / nueva tarea / etc.) -->
+    <div id="tb-modal" class="tb-modal is-hidden" role="dialog" aria-modal="true">
+        <div class="tb-modal-card">
+            <div class="tb-modal-head">
+                <h3 id="tb-modal-title">Título</h3>
+                <button id="tb-modal-close" class="tb-panel-close" title="Cerrar">&times;</button>
+            </div>
+            <div id="tb-modal-body" class="tb-modal-body"></div>
+            <div class="tb-modal-foot">
+                <button id="tb-modal-cancel" class="tb-btn">Cancelar</button>
+                <button id="tb-modal-ok" class="tb-btn tb-btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast reutilizando el estilo existente -->
+    <div id="toast" class="toast hidden"></div>
+{% endblock %}
+
+{% block extra_js %}
+    <script id="tablero-js"
+            src="{% static 'tareas/js/tablero.js' %}"
+            data-tablero-url="{% url 'tareas_api_tablero' %}"
+            data-version-url="{% url 'tareas_api_version' %}"
+            data-csrf-token="{{ csrf_token }}"></script>
+{% endblock %}

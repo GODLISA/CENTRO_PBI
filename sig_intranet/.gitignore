@@ -3,6 +3,8 @@
 
 # Base de datos
 db.sqlite3
+db.sqlite3-wal
+db.sqlite3-shm
 
 # Entorno virtual
 venv/

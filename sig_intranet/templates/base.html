@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}SIG Intranet{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}app-body{% endblock %}">
+    <header class="nav">
+        <a href="{% url 'panel' %}" class="nav-brand">SIG <span>Intranet</span></a>
+        <nav class="nav-links">
+            <a href="{% url 'panel' %}" class="nav-link{% if request.path == '/' %} active{% endif %}">Paneles</a>
+            <a href="{% url 'presupuestos_lista' %}" class="nav-link{% if '/presupuestos/' in request.path %} active{% endif %}">Presupuestos</a>
+            <a href="{% url 'inventarios_stock_repuestos' %}" class="nav-link{% if '/inventarios/' in request.path %} active{% endif %}">Inventarios</a>
+            <a href="{% url 'tareas_tablero' %}" class="nav-link{% if '/tareas/' in request.path %} active{% endif %}">Tareas</a>
+        </nav>
+        <div class="nav-user">
+            {% block header_actions %}{% endblock %}
+            <span class="nav-username">{{ user.username }}</span>
+            <a href="{% url 'logout' %}" class="nav-logout">Cerrar sesión</a>
+        </div>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

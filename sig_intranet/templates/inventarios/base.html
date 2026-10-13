@@ -1,25 +1,13 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titulo %}Inventarios{% endblock %} | SIG Intranet</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'inventarios/css/inventarios.css' %}">
-</head>
-<body class="panel-body">
-    <div class="header">
-        <h1>📦 Inventarios</h1>
-        <div class="user-info">
-            <a href="{% url 'inventarios_stock_repuestos' %}" class="header-link">Stock repuestos</a>
-            <a href="{% url 'panel' %}" class="header-link">Paneles</a>
-            <a href="{% url 'presupuestos_lista' %}" class="header-link">Presupuestos</a>
-            <span>{{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="logout-btn">Cerrar Sesión</a>
-        </div>
-    </div>
 
+{% block title %}{% block titulo %}Inventarios{% endblock %} | SIG Intranet{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'inventarios/css/inventarios.css' %}">
+{% endblock %}
+
+{% block content %}
     <div class="inv-container">
         {% if messages %}
             {% for message in messages %}
@@ -28,5 +16,4 @@
         {% endif %}
         {% block contenido %}{% endblock %}
     </div>
-</body>
-</html>
+{% endblock %}

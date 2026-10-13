@@ -12,6 +12,7 @@ urlpatterns = [
     path('', include('panel.urls')),
     path('presupuestos/', include('presupuestos.urls')),
     path('inventarios/', include('inventarios.urls')),
+    path('tareas/', include('tareas.urls')),
 ]
 
 # Servir archivos estáticos y media con DEBUG=False (válido para intranet)

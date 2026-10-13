@@ -1,28 +1,17 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel SIG</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
-<body class="panel-body">
-    <div class="header">
-        <h1>📊 Panel SIG</h1>
-        <div class="user-info">
-            {% if user.is_staff %}
-            <button id="btn-actualizar" class="btn-actualizar" title="Actualizar datos de los paneles">
-                🔄 Actualizar Paneles
-            </button>
-            {% endif %}
-            <a href="{% url 'presupuestos_lista' %}" class="logout-btn" title="Módulo de presupuestos">🧾 Presupuestos</a>
-            <a href="{% url 'inventarios_stock_repuestos' %}" class="logout-btn" title="Módulo de inventarios">📦 Inventarios</a>
-            <span>{{ user.username }}</span>
-            <a href="{% url 'logout' %}" class="logout-btn">Cerrar Sesión</a>
-        </div>
-    </div>
 
+{% block title %}Paneles | SIG Intranet{% endblock %}
+
+{% block header_actions %}
+    {% if user.is_staff %}
+    <button id="btn-actualizar" class="btn-actualizar" title="Actualizar datos de los paneles">
+        Actualizar paneles
+    </button>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
     <!-- Panel de estado del job -->
     {% if user.is_staff %}
     <div id="job-status-panel" class="job-status-panel hidden">
@@ -32,7 +21,7 @@
                 <div id="job-status-label" class="job-status-label">Iniciando...</div>
                 <div id="job-status-detail" class="job-status-detail"></div>
             </div>
-            <button id="job-status-close" class="job-status-close" title="Cerrar">✕</button>
+            <button id="job-status-close" class="job-status-close" title="Cerrar">&times;</button>
         </div>
         <div id="job-progress-bar" class="job-progress-bar">
             <div id="job-progress-fill" class="job-progress-fill"></div>
@@ -42,6 +31,7 @@
 
     <!-- Toast de notificación -->
     <div id="toast" class="toast hidden"></div>
+
     {% if paneles %}
         <div class="panel-grid">
             {% for panel in paneles %}
@@ -59,12 +49,13 @@
             <p>No tienes paneles asignados. Contacta al administrador.</p>
         </div>
     {% endif %}
+{% endblock %}
 
+{% block extra_js %}
     <script
         src="{% static 'js/app.js' %}"
         data-actualizar-url="{% url 'actualizar_paneles' %}"
         data-estado-url-base="/api/estado-job/"
         data-csrf-token="{{ csrf_token }}">
     </script>
-</body>
-</html>
+{% endblock %}
