@@ -17,13 +17,14 @@ from django.views.decorators.http import require_GET, require_POST
 from . import services
 from .models import (
     Dependencia, Objetivo, ObjetivoMiembro, Subtarea, Tarea,
-    ESTADOS, PRIORIDADES, PERMISO_VER, PERMISO_EDITAR, ESTADO_COMPLETADO,
+    ESTADOS, PRIORIDADES, RECURRENCIAS, PERMISO_VER, PERMISO_EDITAR, ESTADO_COMPLETADO,
 )
 
 User = get_user_model()
 
 _ESTADOS_VALIDOS = {c[0] for c in ESTADOS}
 _PRIOS_VALIDAS = {c[0] for c in PRIORIDADES}
+_RECURRENCIAS_VALIDAS = {c[0] for c in RECURRENCIAS}
 
 
 # ----- Helpers de respuesta -----
@@ -234,11 +235,13 @@ def api_tarea_crear(request, pk):
     if not titulo:
         return _err('El título es obligatorio.')
     prioridad = d.get('prioridad') if d.get('prioridad') in _PRIOS_VALIDAS else 'media'
+    recurrencia = d.get('recurrencia') if d.get('recurrencia') in _RECURRENCIAS_VALIDAS else ''
     siguiente_orden = obj.tareas.count()
     with transaction.atomic():
         t = Tarea.objects.create(
             objetivo=obj, titulo=titulo, responsable=_usuario(d.get('responsable')),
-            prioridad=prioridad, vence=(d.get('vence') or None), orden=siguiente_orden)
+            prioridad=prioridad, vence=(d.get('vence') or None),
+            recurrencia=recurrencia, orden=siguiente_orden)
     return _bump_ok({'id': services.tid(t.id)})
 
 
@@ -266,6 +269,8 @@ def api_tarea_actualizar(request, pk):
                 return _err('Estado inválido.')
             t.estado = nuevo
             t.save(update_fields=['estado'])
+            if nuevo == ESTADO_COMPLETADO:
+                services.reabrir_si_recurrente(t)
         else:
             # Edición estructural: requiere permiso de edición
             if not services.puede_editar(obj, request.user):
@@ -281,6 +286,8 @@ def api_tarea_actualizar(request, pk):
                 t.vence = d.get('vence') or None
             if 'responsable' in d:
                 t.responsable = _usuario(d.get('responsable'))
+            if 'recurrencia' in d and d['recurrencia'] in _RECURRENCIAS_VALIDAS:
+                t.recurrencia = d['recurrencia']
             if 'estado' in d and d['estado'] in _ESTADOS_VALIDOS and not list(t.subtareas.all()):
                 t.estado = d['estado']
             t.save()

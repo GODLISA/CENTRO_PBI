@@ -3,11 +3,13 @@ Tests de la API del módulo Tareas: visibilidad, permisos, ciclos, rollup,
 versión y enmascarado de dependencias privadas. Usan force_login (sin
 credenciales reales) y el cliente de test (exento de CSRF).
 """
+import datetime
 import json
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from . import services
 from .models import (
@@ -135,3 +137,77 @@ class TareasAPITests(TestCase):
         self.assertIsNone(dep['nombre'])
         self.assertIsNone(dep['targetBubbleId'])
         self.assertIn('pct', dep)  # el % sí se expone (por diseño)
+
+
+class RecurrenciaTests(TestCase):
+    """Tarea recurrente: al completarla vuelve a pendiente con el siguiente
+    vencimiento (ver services.reabrir_si_recurrente)."""
+
+    def setUp(self):
+        self.dueno = User.objects.create_user('dueno_rec', password='x')
+        self.objetivo = Objetivo.objects.create(titulo='Mantención', dueno=self.dueno)
+
+    def test_siguiente_vencimiento(self):
+        d = datetime.date(2026, 1, 31)
+        self.assertEqual(services.siguiente_vencimiento(d, 'diaria'), datetime.date(2026, 2, 1))
+        self.assertEqual(services.siguiente_vencimiento(d, 'semanal'), datetime.date(2026, 2, 7))
+        # 31-ene no existe en febrero: se recorta al último día del mes
+        self.assertEqual(services.siguiente_vencimiento(d, 'mensual'), datetime.date(2026, 2, 28))
+        self.assertIsNone(services.siguiente_vencimiento(d, ''))
+
+    def test_completar_recurrente_la_reabre(self):
+        vence = timezone.localdate() + datetime.timedelta(days=3)
+        t = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Revisar bombas', responsable=self.dueno,
+            vence=vence, recurrencia='semanal')
+        self.client.force_login(self.dueno)
+        self.client.post(
+            reverse('tareas_tarea_actualizar', args=[t.id]),
+            data=json.dumps({'estado': ESTADO_COMPLETADO}),
+            content_type='application/json')
+        t.refresh_from_db()
+        self.assertEqual(t.estado, ESTADO_PENDIENTE)
+        self.assertEqual(t.vence, vence + datetime.timedelta(days=7))
+
+    def test_completar_no_recurrente_queda_completada(self):
+        t = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Tarea normal', responsable=self.dueno)
+        self.client.force_login(self.dueno)
+        self.client.post(
+            reverse('tareas_tarea_actualizar', args=[t.id]),
+            data=json.dumps({'estado': ESTADO_COMPLETADO}),
+            content_type='application/json')
+        t.refresh_from_db()
+        self.assertEqual(t.estado, ESTADO_COMPLETADO)
+
+    def test_subtareas_vuelven_a_pendiente(self):
+        t = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Ronda diaria', responsable=self.dueno,
+            recurrencia='diaria')
+        s1 = Subtarea.objects.create(tarea=t, titulo='Piso 1', responsable=self.dueno)
+        s2 = Subtarea.objects.create(tarea=t, titulo='Piso 2', responsable=self.dueno)
+        self.client.force_login(self.dueno)
+        for s in (s1, s2):
+            self.client.post(
+                reverse('tareas_subtarea_actualizar', args=[s.id]),
+                data=json.dumps({'estado': ESTADO_COMPLETADO}),
+                content_type='application/json')
+        t.refresh_from_db()
+        s1.refresh_from_db()
+        s2.refresh_from_db()
+        self.assertEqual(t.estado, ESTADO_PENDIENTE)
+        self.assertEqual(s1.estado, ESTADO_PENDIENTE)
+        self.assertEqual(s2.estado, ESTADO_PENDIENTE)
+        self.assertEqual(t.vence, timezone.localdate() + datetime.timedelta(days=1))
+
+
+class UsuariosOrdenTests(TestCase):
+    """Los usuarios del tablero salen en orden alfabético por nombre visible."""
+
+    def test_orden_alfabetico(self):
+        User.objects.create_user('zulema', password='x', first_name='Ana', last_name='Zu')
+        User.objects.create_user('ana', password='x', first_name='Carlos', last_name='Be')
+        yo = User.objects.create_user('beto', password='x')
+        nombres = [u['nombre'] for u in services.serializar_tablero(yo)['usuarios']]
+        self.assertEqual(nombres, sorted(nombres, key=str.casefold))
+        self.assertEqual(nombres[0], 'Ana Zu')

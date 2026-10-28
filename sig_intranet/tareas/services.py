@@ -3,12 +3,17 @@ Lógica de negocio del módulo Tareas (autoritativa en el servidor):
 reglas de peso/completado/bloqueo, visibilidad y permisos, serialización
 del tablero para el front y detección de ciclos de dependencias.
 """
+import calendar
+import datetime
+
 from django.contrib.auth import get_user_model
 from django.db.models import F, Q
+from django.utils import timezone
 
 from .models import (
     CambioTablero, Dependencia, Objetivo, Subtarea, Tarea,
     ESTADO_COMPLETADO, ESTADO_EN_CURSO, ESTADO_PENDIENTE, PERMISO_EDITAR,
+    RECURRENCIA_DIARIA, RECURRENCIA_SEMANAL, RECURRENCIA_MENSUAL,
 )
 
 User = get_user_model()
@@ -126,6 +131,42 @@ def recalcular_estado_tarea(tarea):
     elif tarea.estado == ESTADO_COMPLETADO:
         tarea.estado = ESTADO_EN_CURSO
     tarea.save(update_fields=['estado'])
+    if tarea.estado == ESTADO_COMPLETADO:
+        reabrir_si_recurrente(tarea)
+
+
+# ----- Recurrencia -----
+def siguiente_vencimiento(desde, recurrencia):
+    """Fecha del próximo ciclo. En mensual, el día se recorta al último del mes
+    (31-ene + 1 mes = 28/29-feb)."""
+    if recurrencia == RECURRENCIA_DIARIA:
+        return desde + datetime.timedelta(days=1)
+    if recurrencia == RECURRENCIA_SEMANAL:
+        return desde + datetime.timedelta(days=7)
+    if recurrencia == RECURRENCIA_MENSUAL:
+        anio = desde.year + (1 if desde.month == 12 else 0)
+        mes = 1 if desde.month == 12 else desde.month + 1
+        dia = min(desde.day, calendar.monthrange(anio, mes)[1])
+        return datetime.date(anio, mes, dia)
+    return None
+
+
+def reabrir_si_recurrente(tarea):
+    """Tras completar una tarea recurrente: vuelve a pendiente (y sus subtareas
+    también) con el siguiente vencimiento. Devuelve True si se reabrió.
+
+    La base del próximo vencimiento es la fecha de vencimiento anterior, salvo
+    que ya haya pasado: en ese caso se cuenta desde hoy, para no arrastrar
+    ciclos vencidos."""
+    if not tarea.recurrencia:
+        return False
+    hoy = timezone.localdate()
+    base = tarea.vence if (tarea.vence and tarea.vence >= hoy) else hoy
+    tarea.vence = siguiente_vencimiento(base, tarea.recurrencia)
+    tarea.estado = ESTADO_PENDIENTE
+    tarea.save(update_fields=['estado', 'vence'])
+    tarea.subtareas.update(estado=ESTADO_PENDIENTE)
+    return True
 
 
 # ----- Visibilidad y permisos -----
@@ -250,6 +291,7 @@ def _serializar_tarea(t, visible_ids):
         'state': t.estado,
         'prio': t.prioridad,
         'due': t.vence.isoformat() if t.vence else '',
+        'recur': t.recurrencia,
         'subtasks': [_serializar_subtarea(s) for s in t.subtareas.all()],
         'dependsOn': [_serializar_dep(d, visible_ids) for d in t.dependencias.all()],
     }
@@ -278,10 +320,12 @@ def serializar_tablero(user):
     )
     visible_ids = set(o.id for o in visibles)
     objetivos = [_serializar_objetivo(o, visible_ids) for o in visibles]
-    usuarios = [
-        {'id': uid(u.id), 'nombre': u.get_full_name() or u.username}
-        for u in User.objects.filter(is_active=True).order_by('username')
-    ]
+    # Orden alfabético por el nombre que se muestra, no por username
+    usuarios = sorted(
+        ({'id': uid(u.id), 'nombre': u.get_full_name() or u.username}
+         for u in User.objects.filter(is_active=True)),
+        key=lambda x: x['nombre'].casefold(),
+    )
     return {
         'usuarios': usuarios,
         'objetivos': objetivos,

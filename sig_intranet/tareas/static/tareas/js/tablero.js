@@ -27,6 +27,11 @@
   var lastVersion = -1;
   var panelSortBy = 'manual', panelGroupBy = 'none';
   var posTimers = {};
+  // Filtros de visualización del lienzo (solo UI; no tocan los datos)
+  var filtros = { responsable: '', estado: '', ocultarCompletadas: false };
+  // Zonas por dueño: cada usuario tiene una región del lienzo
+  var zonasOn = true;
+  var zonas = {};
 
   // ----- API -----
   function readConfig() {
@@ -180,6 +185,23 @@
   }
   function canComplete(b, assignee) { return currentUser === assignee || currentUser === b.ownerId; }
 
+  // ----- Filtros de visualización -----
+  function hayFiltros() {
+    return !!(filtros.responsable || filtros.estado || filtros.ocultarCompletadas);
+  }
+  function taskPasaFiltro(t) {
+    if (filtros.responsable && t.assignee !== filtros.responsable) return false;
+    var es = effTaskState(t);
+    if (filtros.estado && es !== filtros.estado) return false;
+    if (filtros.ocultarCompletadas && es === 'completado') return false;
+    return true;
+  }
+  function bubbleVisible(b) {
+    if (!hayFiltros()) return true;
+    return b.tasks.some(taskPasaFiltro);
+  }
+  function bubblesVisibles() { return DATA.bubbles.filter(bubbleVisible); }
+
   // ----- Visual de la burbuja -----
   function bubbleState(b) {
     var states = b.tasks.map(effTaskState);
@@ -194,17 +216,22 @@
   function stateLabel(s) {
     return { pendiente: 'Pendiente', en_curso: 'En curso', completado: 'Completado', bloqueado: 'Bloqueado' }[s] || s;
   }
-  function bubbleSize(b) { return Math.round(54 + 46 * Math.sqrt(bubbleWeight(b))); }
+  // Crecimiento de la burbuja según su peso (tareas x1 + subtareas x0,1)
+  var SIZE_BASE = 60, SIZE_FACTOR = 70;
+  function bubbleSize(b) { return Math.round(SIZE_BASE + SIZE_FACTOR * Math.sqrt(bubbleWeight(b))); }
 
   // ----- Elementos del grafo -----
   function buildElements() {
     var els = [];
-    DATA.bubbles.forEach(function (b) {
-      els.push({ group: 'nodes', data: { id: b.id, size: bubbleSize(b), weight: bubbleWeight(b) }, classes: 'bubble' });
+    var visibles = bubblesVisibles();
+    var visibleIds = {};
+    visibles.forEach(function (b) { visibleIds[b.id] = true; });
+    visibles.forEach(function (b) {
+      els.push({ group: 'nodes', data: { id: b.id, size: bubbleSize(b), weight: bubbleWeight(b), owner: b.ownerId }, classes: 'bubble' });
     });
     var edgeSeen = {};
     var ghostN = 0;
-    DATA.bubbles.forEach(function (b) {
+    visibles.forEach(function (b) {
       b.tasks.forEach(function (t) {
         (t.dependsOn || []).forEach(function (dep) {
           if (dep.privado) {
@@ -212,7 +239,7 @@
             var gid = 'ghost_' + b.id + '_' + ghostN;
             els.push({ group: 'nodes', data: { id: gid, label: 'Tarea privada\n' + dep.pct + '%', src: b.id }, classes: 'ghost' });
             els.push({ group: 'edges', data: { id: 'ge_' + gid, source: b.id, target: gid }, classes: 'priv' });
-          } else if (dep.targetBubbleId && dep.targetBubbleId !== b.id) {
+          } else if (dep.targetBubbleId && dep.targetBubbleId !== b.id && visibleIds[dep.targetBubbleId]) {
             var key = b.id + '>' + dep.targetBubbleId;
             if (edgeSeen[key]) { if (dep.blocking) edgeSeen[key].blocking = true; return; }
             var e = { group: 'edges', data: { id: 'e_' + key, source: b.id, target: dep.targetBubbleId }, blocking: dep.blocking };
@@ -252,6 +279,79 @@
     }}
   ];
 
+  // ----- Zonas por dueño -----
+  var ZONA_W = 900, ZONA_H = 650, ZONA_GAP = 70, ZONA_PAD = 26;
+  var zoneEls = {};
+
+  function calcularZonas() {
+    zonas = {};
+    var duenos = [];
+    bubblesVisibles().forEach(function (b) { if (duenos.indexOf(b.ownerId) < 0) duenos.push(b.ownerId); });
+    duenos.sort(function (a, b) { return userName(a).localeCompare(userName(b)); });
+    var cols = Math.max(1, Math.ceil(Math.sqrt(duenos.length)));
+    duenos.forEach(function (uid, i) {
+      zonas[uid] = {
+        x: (i % cols) * (ZONA_W + ZONA_GAP),
+        y: Math.floor(i / cols) * (ZONA_H + ZONA_GAP),
+        w: ZONA_W, h: ZONA_H, label: userName(uid)
+      };
+    });
+  }
+  function clampAZona(b, pos) {
+    var z = zonas[b.ownerId];
+    if (!zonasOn || !z) return pos;
+    var r = bubbleSize(b) / 2 + ZONA_PAD;
+    return {
+      x: Math.min(Math.max(pos.x, z.x + r), z.x + z.w - r),
+      y: Math.min(Math.max(pos.y, z.y + r), z.y + z.h - r)
+    };
+  }
+  function applyZoneLayout() {
+    var porDueno = {};
+    cy.nodes('.bubble').forEach(function (n) {
+      var b = getBubble(n.id());
+      if (b) (porDueno[b.ownerId] = porDueno[b.ownerId] || []).push(n);
+    });
+    Object.keys(porDueno).forEach(function (uid) {
+      var z = zonas[uid];
+      if (!z) return;
+      var arr = porDueno[uid].sort(function (a, b) { return (b.data('weight') || 0) - (a.data('weight') || 0); });
+      var cols = Math.max(1, Math.ceil(Math.sqrt(arr.length)));
+      var filas = Math.ceil(arr.length / cols);
+      var cw = z.w / cols, ch = (z.h - ZONA_PAD) / filas;
+      arr.forEach(function (n, i) {
+        n.position({
+          x: z.x + cw * ((i % cols) + 0.5),
+          y: z.y + ZONA_PAD + ch * (Math.floor(i / cols) + 0.5)
+        });
+      });
+    });
+  }
+  function createZones() {
+    zoneEls = {};
+    if (!zonasOn) return;
+    var layer = document.getElementById('tb-overlay-layer');
+    Object.keys(zonas).forEach(function (uid) {
+      var el = document.createElement('div');
+      el.className = 'tb-zone';
+      el.innerHTML = '<span class="tb-zone-label">' + escapeHtml(zonas[uid].label) + '</span>';
+      layer.appendChild(el);
+      zoneEls[uid] = el;
+    });
+  }
+  function syncZones() {
+    if (!cy) return;
+    var zoom = cy.zoom(), pan = cy.pan();
+    Object.keys(zoneEls).forEach(function (uid) {
+      var z = zonas[uid], s = zoneEls[uid].style;
+      s.left = (z.x * zoom + pan.x) + 'px';
+      s.top = (z.y * zoom + pan.y) + 'px';
+      s.width = (z.w * zoom) + 'px';
+      s.height = (z.h * zoom) + 'px';
+      s.fontSize = Math.max(9, 16 * zoom).toFixed(1) + 'px';
+    });
+  }
+
   function applyAutoLayout() {
     var arr = cy.nodes('.bubble').toArray().sort(function (a, b) { return (b.data('weight') || 0) - (a.data('weight') || 0); });
     if (!arr.length) return;
@@ -287,6 +387,7 @@
     var layer = document.getElementById('tb-overlay-layer');
     layer.innerHTML = '';
     overlays = {};
+    createZones();
     cy.nodes('.bubble').forEach(function (n) {
       var b = getBubble(n.id());
       if (!b) return;
@@ -310,6 +411,7 @@
   }
   function syncOverlays() {
     if (!cy) return;
+    syncZones();
     cy.nodes('.bubble').forEach(function (n) {
       var ov = overlays[n.id()];
       if (!ov) return;
@@ -336,6 +438,7 @@
 
   // ----- Render -----
   function render() {
+    poblarFiltroResponsables();
     var container = document.getElementById('cy');
     var prevPan = cy ? cy.pan() : null;
     var prevZoom = cy ? cy.zoom() : null;
@@ -346,8 +449,12 @@
       wheelSensitivity: 0.2, minZoom: 0.25, maxZoom: 2.5, boxSelectionEnabled: false
     });
 
-    applyAutoLayout();
-    cy.nodes('.bubble').forEach(function (n) { var p = positions[n.id()]; if (p) n.position(p); });
+    calcularZonas();
+    if (zonasOn) applyZoneLayout(); else applyAutoLayout();
+    cy.nodes('.bubble').forEach(function (n) {
+      var p = positions[n.id()], b = getBubble(n.id());
+      if (p && b) n.position(clampAZona(b, p));
+    });
     cy.nodes('.ghost').forEach(function (g) { g.ungrabify(); });
     positionGhosts();
     createOverlays();
@@ -357,7 +464,8 @@
     cy.on('tap', 'node.ghost', function () { toast('Pertenece a una burbuja privada que no puedes ver.', 'error'); });
     cy.on('tap', function (e) { if (e.target === cy) closePanel(); });
     cy.on('dragfree', 'node.bubble', function (e) {
-      var n = e.target;
+      var n = e.target, b = getBubble(n.id());
+      if (b) n.position(clampAZona(b, { x: n.position('x'), y: n.position('y') }));
       positions[n.id()] = { x: n.position('x'), y: n.position('y') };
       positionGhosts(); syncOverlays();
       guardarPosicion(n.id(), n.position('x'), n.position('y'));
@@ -402,6 +510,12 @@
   }
 
   function stateChip(s) { return '<span class="tb-state ' + s + '">' + stateLabel(s) + '</span>'; }
+  function recurLabel(r) {
+    return { diaria: 'Diaria', semanal: 'Semanal', mensual: 'Mensual' }[r] || '';
+  }
+  function recurChip(r) {
+    return r ? '<span class="tb-recur" title="Al completarla se reabre con el siguiente vencimiento">&#8635; ' + recurLabel(r) + '</span>' : '';
+  }
   function prioChip(p) { return p ? '<span class="tb-prio ' + p + '">' + p.charAt(0).toUpperCase() + p.slice(1) + '</span>' : ''; }
 
   function depsHtml(item, editable) {
@@ -467,7 +581,7 @@
       (done ? ' checked' : '') + (cbDisabled ? ' disabled' : '') + ' title="' + cbTitle + '">' +
       '<div class="tb-task-main">' +
         '<div class="tb-task-title ' + (done ? 'done' : '') + '">' + escapeHtml(t.title) + '</div>' +
-        '<div class="tb-task-sub">' + stateChip(es) + prioChip(t.prio) +
+        '<div class="tb-task-sub">' + stateChip(es) + prioChip(t.prio) + recurChip(t.recur) +
           '<span class="tb-assignee">Resp.: ' + escapeHtml(userName(t.assignee)) + '</span>' +
           (t.due ? '<span class="tb-assignee">Vence: ' + escapeHtml(t.due) + '</span>' : '') +
         '</div>' + depsHtml(t, editable);
@@ -490,6 +604,7 @@
             '<div class="tb-subtask-title ' + (sdone ? 'done' : '') + '">' + escapeHtml(s.title) +
               ' <span class="tb-assignee">Resp.: ' + escapeHtml(userName(s.assignee)) + '</span></div>' +
           '</div>' +
+          (editable ? '<button class="tb-btn tb-btn-sm" data-act="edit-sub" data-id="' + s.id + '">Editar</button>' : '') +
           (editable ? '<button class="tb-btn tb-btn-sm tb-btn-danger" data-act="del-sub" data-id="' + s.id + '"' +
             (isOwner(b) ? '' : ' disabled title="Solo el dueño"') + '>Quitar</button>' : '') +
         '</div>';
@@ -498,6 +613,7 @@
     }
     if (editable) {
       h += '<div class="tb-task-actions">' +
+        '<button class="tb-btn tb-btn-sm" data-act="edit-task" data-id="' + t.id + '">Editar</button>' +
         '<button class="tb-btn tb-btn-sm" data-act="add-sub" data-id="' + t.id + '">Agregar subtarea</button>' +
         '<button class="tb-btn tb-btn-sm" data-act="add-dep" data-id="' + t.id + '">Dependencia</button>' +
         '<button class="tb-btn tb-btn-sm tb-btn-danger" data-act="del-task" data-id="' + t.id + '"' +
@@ -664,6 +780,8 @@
       case 'del-dep':
         persistReload(apiPost('dependencia/' + id + '/eliminar/', {}), 'Dependencia eliminada.');
         break;
+      case 'edit-task': modalEditTask(b, id); break;
+      case 'edit-sub': modalEditSub(b, id); break;
       case 'add-task': modalAddTask(b); break;
       case 'add-sub': modalAddSub(b, id); break;
       case 'add-dep': modalAddDep(b, id); break;
@@ -683,14 +801,57 @@
       '<div class="tb-field"><label>Título</label><input type="text" id="m-title" placeholder="Describe la tarea"></div>' +
       '<div class="tb-field"><label>Responsable</label><select id="m-assignee">' + userOptions(currentUser) + '</select></div>' +
       '<div class="tb-field"><label>Prioridad</label><select id="m-prio"><option value="alta">Alta</option><option value="media" selected>Media</option><option value="baja">Baja</option></select></div>' +
-      '<div class="tb-field"><label>Fecha límite</label><input type="date" id="m-due"></div>',
+      '<div class="tb-field"><label>Fecha límite</label><input type="date" id="m-due"></div>' +
+      '<div class="tb-field"><label>Recurrencia</label><select id="m-recur">' + recurOptions('') + '</select></div>',
       function () {
         var title = document.getElementById('m-title').value.trim();
         if (!title) { toast('Escribe un título.', 'error'); return false; }
         persistReload(apiPost('objetivo/' + pk(b.id) + '/tarea/crear/', {
           titulo: title, responsable: document.getElementById('m-assignee').value,
-          prioridad: document.getElementById('m-prio').value, vence: document.getElementById('m-due').value || ''
+          prioridad: document.getElementById('m-prio').value, vence: document.getElementById('m-due').value || '',
+          recurrencia: document.getElementById('m-recur').value
         }), 'Tarea agregada.');
+      });
+  }
+  function recurOptions(sel) {
+    return [['', 'No recurrente'], ['diaria', 'Diaria'], ['semanal', 'Semanal'], ['mensual', 'Mensual']]
+      .map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === (sel || '') ? ' selected' : '') + '>' + o[1] + '</option>'; })
+      .join('');
+  }
+  function modalEditTask(b, taskId) {
+    var t = b.tasks.find(function (x) { return x.id === taskId; });
+    if (!t) return;
+    openModal('Editar tarea',
+      '<div class="tb-field"><label>Título</label><input type="text" id="m-title" value="' + escapeHtml(t.title) + '"></div>' +
+      '<div class="tb-field"><label>Responsable</label><select id="m-assignee">' + userOptions(t.assignee) + '</select></div>' +
+      '<div class="tb-field"><label>Prioridad</label><select id="m-prio">' +
+        selOptions([['alta', 'Alta'], ['media', 'Media'], ['baja', 'Baja']], t.prio) + '</select></div>' +
+      '<div class="tb-field"><label>Fecha límite</label><input type="date" id="m-due" value="' + escapeHtml(t.due || '') + '"></div>' +
+      '<div class="tb-field"><label>Recurrencia</label><select id="m-recur">' + recurOptions(t.recur) + '</select>' +
+      '<div class="tb-hint">Al completarla vuelve a pendiente con el siguiente vencimiento.</div></div>',
+      function () {
+        var title = document.getElementById('m-title').value.trim();
+        if (!title) { toast('Escribe un título.', 'error'); return false; }
+        persistReload(apiPost('tarea/' + pk(t.id) + '/actualizar/', {
+          titulo: title, responsable: document.getElementById('m-assignee').value,
+          prioridad: document.getElementById('m-prio').value,
+          vence: document.getElementById('m-due').value || '',
+          recurrencia: document.getElementById('m-recur').value
+        }), 'Tarea actualizada.');
+      });
+  }
+  function modalEditSub(b, subId) {
+    var fs = findSubtask(subId);
+    if (!fs) return;
+    openModal('Editar subtarea',
+      '<div class="tb-field"><label>Título</label><input type="text" id="m-title" value="' + escapeHtml(fs.sub.title) + '"></div>' +
+      '<div class="tb-field"><label>Responsable</label><select id="m-assignee">' + userOptions(fs.sub.assignee) + '</select></div>',
+      function () {
+        var title = document.getElementById('m-title').value.trim();
+        if (!title) { toast('Escribe un título.', 'error'); return false; }
+        persistReload(apiPost('subtarea/' + pk(subId) + '/actualizar/', {
+          titulo: title, responsable: document.getElementById('m-assignee').value
+        }), 'Subtarea actualizada.');
       });
   }
   function modalAddSub(b, taskId) {
@@ -748,7 +909,9 @@
   var modal = document.getElementById('tb-modal');
   var modalTitle = document.getElementById('tb-modal-title');
   var modalBody = document.getElementById('tb-modal-body');
-  function openModal(title, bodyHtml, onOk) {
+  function openModal(title, bodyHtml, onOk, okLabel) {
+    document.getElementById('tb-modal-ok').textContent = okLabel || 'Guardar';
+    document.getElementById('tb-modal-cancel').style.display = okLabel ? 'none' : '';
     modalTitle.textContent = title;
     modalBody.innerHTML = bodyHtml;
     modalOkHandler = onOk;
@@ -794,17 +957,99 @@
       });
   }
 
+  // ----- Resumen por usuario -----
+  function resumenPorUsuario() {
+    var hoy = new Date().toISOString().slice(0, 10);
+    var filas = {};
+    function fila(uid) {
+      if (!filas[uid]) filas[uid] = { uid: uid, pendiente: 0, en_curso: 0, completado: 0, bloqueado: 0, vencidas: 0, total: 0 };
+      return filas[uid];
+    }
+    DATA.bubbles.forEach(function (b) {
+      b.tasks.forEach(function (t) {
+        var f = fila(t.assignee);
+        var es = effTaskState(t);
+        f[es] = (f[es] || 0) + 1;
+        f.total += 1;
+        if (t.due && t.due < hoy && es !== 'completado') f.vencidas += 1;
+        (t.subtasks || []).forEach(function (s) {
+          var fs = fila(s.assignee);
+          fs[s.state] = (fs[s.state] || 0) + 1;
+          fs.total += 1;
+        });
+      });
+    });
+    return Object.keys(filas).map(function (k) { return filas[k]; })
+      .sort(function (a, b) { return userName(a.uid).localeCompare(userName(b.uid)); });
+  }
+  function modalResumen() {
+    var filas = resumenPorUsuario();
+    var html;
+    if (!filas.length) {
+      html = '<div class="tb-empty">No hay tareas asignadas.</div>';
+    } else {
+      html = '<table class="tb-resumen"><thead><tr>' +
+        '<th>Usuario</th><th>Total</th><th>Pendientes</th><th>En curso</th>' +
+        '<th>Bloqueadas</th><th>Completadas</th><th>Vencidas</th></tr></thead><tbody>';
+      filas.forEach(function (f) {
+        html += '<tr>' +
+          '<td>' + escapeHtml(userName(f.uid)) + '</td>' +
+          '<td class="num">' + f.total + '</td>' +
+          '<td class="num">' + f.pendiente + '</td>' +
+          '<td class="num">' + f.en_curso + '</td>' +
+          '<td class="num">' + f.bloqueado + '</td>' +
+          '<td class="num">' + f.completado + '</td>' +
+          '<td class="num' + (f.vencidas ? ' alerta' : '') + '">' + f.vencidas + '</td>' +
+        '</tr>';
+      });
+      html += '</tbody></table>' +
+        '<div class="tb-hint">Cuenta tareas y subtareas de las burbujas que puedes ver. ' +
+        'Vencidas: con fecha límite pasada y sin completar.</div>';
+    }
+    openModal('Resumen de tareas por usuario', html, null, 'Cerrar');
+  }
+
+  // ----- Filtros de la barra -----
+  function poblarFiltroResponsables() {
+    var sel = document.getElementById('f-resp');
+    if (!sel) return;
+    var actual = filtros.responsable;
+    sel.innerHTML = '<option value="">Todos los responsables</option>' +
+      USERS.map(function (u) {
+        return '<option value="' + u.id + '"' + (u.id === actual ? ' selected' : '') + '>' + escapeHtml(u.nombre) + '</option>';
+      }).join('');
+  }
+  function reubicarYPersistir(msg) {
+    positions = {};
+    render();
+    cy.nodes('.bubble').forEach(function (n) { guardarPosicion(n.id(), n.position('x'), n.position('y')); });
+    if (msg) toast(msg, 'success');
+  }
+
   // ----- Toolbar -----
   function wireToolbar() {
     document.getElementById('btn-nuevo-objetivo').addEventListener('click', modalNewBubble);
     document.getElementById('btn-reordenar').addEventListener('click', function () {
-      // Reacomoda por peso y persiste las posiciones resultantes.
-      positions = {};
-      render();
-      cy.nodes('.bubble').forEach(function (n) { guardarPosicion(n.id(), n.position('x'), n.position('y')); });
-      toast('Reordenado por peso (la más grande al centro).', 'success');
+      // Reacomoda (por zona de dueño, o por peso si las zonas están apagadas)
+      reubicarYPersistir(zonasOn ? 'Reordenado por zona de dueño.' : 'Reordenado por peso (la más grande al centro).');
     });
     document.getElementById('btn-ajustar').addEventListener('click', function () { if (cy) { cy.fit(undefined, 60); syncOverlays(); } });
+    document.getElementById('btn-resumen').addEventListener('click', modalResumen);
+    document.getElementById('btn-zonas').addEventListener('click', function () {
+      zonasOn = !zonasOn;
+      this.textContent = zonasOn ? 'Zonas: sí' : 'Zonas: no';
+      this.classList.toggle('tb-btn-on', zonasOn);
+      reubicarYPersistir(zonasOn ? 'Burbujas agrupadas en la zona de su dueño.' : 'Zonas desactivadas.');
+    });
+    document.getElementById('f-resp').addEventListener('change', function () {
+      filtros.responsable = this.value; render();
+    });
+    document.getElementById('f-estado').addEventListener('change', function () {
+      filtros.estado = this.value; render();
+    });
+    document.getElementById('f-completadas').addEventListener('change', function () {
+      filtros.ocultarCompletadas = this.checked; render();
+    });
     document.getElementById('pl-cerrar').addEventListener('click', closePanel);
     overlay.addEventListener('click', closePanel);
     document.getElementById('btn-legend-toggle').addEventListener('click', function () {

@@ -37,6 +37,7 @@ COLUMNAS_DESCRIPCION = (
     'TEXTO_BREVE',
     'DETALLE',
     'GLOSA',
+    'REPUESTO',
     'ARTICULO',
     'ARTÍCULO',
     'NOMBRE',

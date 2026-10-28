@@ -4,7 +4,13 @@ Configurado para entorno productivo en red interna.
 """
 
 from pathlib import Path
+import mimetypes
 import os
+
+# Windows mapea .js/.css a text/plain segun el registro: con SECURE_CONTENT_TYPE_NOSNIFF
+# el navegador los rechaza. Se fuerzan los tipos correctos para django.views.static.serve
+mimetypes.add_type('text/javascript', '.js', True)
+mimetypes.add_type('text/css', '.css', True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

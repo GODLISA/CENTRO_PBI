@@ -6,9 +6,14 @@ Jerarquía: Objetivo (burbuja) > Tarea > Subtarea.
 El estado 'bloqueado' NO se almacena: es derivado (hay una dependencia
 bloqueante sin cumplir). Ver tareas/services.py.
 """
+import django
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+
+# CheckConstraint: el argumento se llama 'check' hasta Django 5.0 y 'condition'
+# desde 5.1 (en 6.0 'check' ya no existe). El servidor corre 4.2.
+_CHECK_KW = 'condition' if django.VERSION >= (5, 1) else 'check'
 
 
 # ----- Choices (estilo clásico, como presupuestos/models.py) -----
@@ -28,6 +33,17 @@ PRIORIDADES = [
     (PRIORIDAD_ALTA, 'Alta'),
     (PRIORIDAD_MEDIA, 'Media'),
     (PRIORIDAD_BAJA, 'Baja'),
+]
+
+RECURRENCIA_NO = ''
+RECURRENCIA_DIARIA = 'diaria'
+RECURRENCIA_SEMANAL = 'semanal'
+RECURRENCIA_MENSUAL = 'mensual'
+RECURRENCIAS = [
+    (RECURRENCIA_NO, 'No recurrente'),
+    (RECURRENCIA_DIARIA, 'Diaria'),
+    (RECURRENCIA_SEMANAL, 'Semanal'),
+    (RECURRENCIA_MENSUAL, 'Mensual'),
 ]
 
 PERMISO_VER = 'ver'
@@ -93,6 +109,10 @@ class Tarea(models.Model):
     estado = models.CharField(max_length=12, choices=ESTADOS, default=ESTADO_PENDIENTE)
     prioridad = models.CharField(max_length=6, choices=PRIORIDADES, default=PRIORIDAD_MEDIA)
     vence = models.DateField(null=True, blank=True)
+    # Al completar una tarea recurrente se reabre con el siguiente vencimiento
+    # (ver services.reabrir_si_recurrente). Vacío = tarea normal.
+    recurrencia = models.CharField(
+        max_length=8, choices=RECURRENCIAS, blank=True, default=RECURRENCIA_NO)
     orden = models.IntegerField(default=0)
 
     class Meta:
@@ -143,11 +163,11 @@ class Dependencia(models.Model):
         constraints = [
             models.CheckConstraint(
                 name='dependencia_un_solo_destino',
-                check=(
+                **{_CHECK_KW: (
                     (Q(objetivo_destino__isnull=False) & Q(tarea_destino__isnull=True) & Q(subtarea_destino__isnull=True)) |
                     (Q(objetivo_destino__isnull=True) & Q(tarea_destino__isnull=False) & Q(subtarea_destino__isnull=True)) |
                     (Q(objetivo_destino__isnull=True) & Q(tarea_destino__isnull=True) & Q(subtarea_destino__isnull=False))
-                ),
+                )},
             ),
         ]
 

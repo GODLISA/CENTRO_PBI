@@ -17,6 +17,21 @@
             <button id="btn-nuevo-objetivo" class="tb-btn tb-btn-primary">Nuevo objetivo</button>
             <button id="btn-reordenar" class="tb-btn" title="Reacomoda por peso (la más grande al centro)">Reordenar</button>
             <button id="btn-ajustar" class="tb-btn" title="Centrar y ajustar el zoom">Ajustar vista</button>
+            <button id="btn-zonas" class="tb-btn tb-btn-on" title="Agrupa las burbujas en la zona de su dueño">Zonas: sí</button>
+            <button id="btn-resumen" class="tb-btn" title="Tareas por usuario">Resumen por usuario</button>
+        </div>
+        <div class="tb-toolbar-filtros">
+            <select id="f-resp" class="tb-select" title="Filtrar por responsable">
+                <option value="">Todos los responsables</option>
+            </select>
+            <select id="f-estado" class="tb-select" title="Filtrar por estado">
+                <option value="">Todos los estados</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en_curso">En curso</option>
+                <option value="bloqueado">Bloqueado</option>
+                <option value="completado">Completado</option>
+            </select>
+            <label class="tb-check-inline"><input type="checkbox" id="f-completadas"> Ocultar completadas</label>
         </div>
         <div class="tb-toolbar-right">
             <span class="tb-sync" id="tb-sync" title="Los cambios de otros aparecen automáticamente"></span>

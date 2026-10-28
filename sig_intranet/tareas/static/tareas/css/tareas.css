@@ -779,3 +779,80 @@
     .tb-panel { width: 100%; }
     .tb-legend { max-width: 170px; font-size: 11px; }
 }
+
+/* ============================================================
+   Zonas por dueño, filtros, recurrencia y resumen por usuario
+   ============================================================ */
+
+/* Zonas: regiones del lienzo, una por dueño. Van detrás de las burbujas. */
+.tb-zone {
+    position: absolute;
+    z-index: 0;
+    border: 1px dashed rgba(176, 198, 214, 0.35);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.025);
+    pointer-events: none;
+    overflow: hidden;
+}
+.tb-zone-label {
+    position: absolute;
+    top: 6px;
+    left: 14px;
+    color: rgba(206, 222, 235, 0.75);
+    font-weight: 600;
+    letter-spacing: .3px;
+    white-space: nowrap;
+}
+
+/* Las burbujas quedan sobre las zonas */
+.bubble-node { z-index: 1; }
+
+/* Filtros de la barra */
+.tb-toolbar-filtros {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.tb-select {
+    background: #16283a;
+    color: #dbe7f1;
+    border: 1px solid rgba(176, 198, 214, 0.3);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 13px;
+}
+.tb-btn-on {
+    border-color: #3498db;
+    color: #eaf4fb;
+}
+
+/* Marca de tarea recurrente */
+.tb-recur {
+    display: inline-block;
+    padding: 1px 7px;
+    margin-left: 4px;
+    border-radius: 10px;
+    font-size: 11px;
+    background: rgba(52, 152, 219, 0.16);
+    border: 1px solid rgba(52, 152, 219, 0.5);
+    color: #bfe2f7;
+}
+
+/* Resumen por usuario */
+.tb-resumen {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.tb-resumen th,
+.tb-resumen td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(176, 198, 214, 0.18);
+    text-align: left;
+}
+.tb-resumen th { font-weight: 600; opacity: .85; }
+.tb-resumen td.num,
+.tb-resumen th.num { text-align: right; }
+.tb-resumen td.num { text-align: right; }
+.tb-resumen td.alerta { color: #ff8b80; font-weight: 600; }
