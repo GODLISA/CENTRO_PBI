@@ -113,6 +113,10 @@ class Tarea(models.Model):
     # (ver services.reabrir_si_recurrente). Vacío = tarea normal.
     recurrencia = models.CharField(
         max_length=8, choices=RECURRENCIAS, blank=True, default=RECURRENCIA_NO)
+    # Fecha del último ciclo cumplido de una tarea recurrente. Sin esto, una
+    # dependencia bloqueante hacia una recurrente nunca se cumpliría: la tarea
+    # vuelve a 'pendiente' apenas se completa.
+    ultima_completada = models.DateField(null=True, blank=True)
     orden = models.IntegerField(default=0)
 
     class Meta:

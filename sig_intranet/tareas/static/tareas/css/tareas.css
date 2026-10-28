@@ -815,16 +815,20 @@
     flex-wrap: wrap;
 }
 .tb-select {
-    background: #16283a;
-    color: #dbe7f1;
-    border: 1px solid rgba(176, 198, 214, 0.3);
+    background: #fff;
+    color: #33415c;
+    border: 1px solid #dce1ea;
     border-radius: 6px;
     padding: 6px 8px;
     font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
 }
+/* Estado activo del botón, misma familia que .tb-state.en_curso */
 .tb-btn-on {
+    background: #e7f1fb;
+    color: #1d4ed8;
     border-color: #3498db;
-    color: #eaf4fb;
 }
 
 /* Marca de tarea recurrente */
@@ -834,12 +838,14 @@
     margin-left: 4px;
     border-radius: 10px;
     font-size: 11px;
-    background: rgba(52, 152, 219, 0.16);
-    border: 1px solid rgba(52, 152, 219, 0.5);
-    color: #bfe2f7;
+    background: #e7f1fb;
+    border: 1px solid #bcd9f5;
+    color: #2563eb;
 }
 
-/* Resumen por usuario */
+/* Resumen por usuario: necesita más ancho que el modal normal (440px) */
+.tb-modal-card.ancha { max-width: 760px; }
+
 .tb-resumen {
     width: 100%;
     border-collapse: collapse;

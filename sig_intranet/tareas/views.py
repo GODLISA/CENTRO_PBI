@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.utils.dateparse import parse_date
 from django.views.decorators.http import require_GET, require_POST
 
 from . import services
@@ -59,6 +60,16 @@ def _get(modelo, valor):
         return modelo.objects.filter(pk=services.parse_pk(valor)).first()
     except (ValueError, TypeError):
         return None
+
+
+def _vence(valor):
+    """Fecha de vencimiento validada. Devuelve (fecha_o_None, error_o_None)."""
+    if not valor:
+        return None, None
+    fecha = parse_date(valor) if isinstance(valor, str) else valor
+    if fecha is None:
+        return None, 'Fecha de vencimiento inválida (formato AAAA-MM-DD).'
+    return fecha, None
 
 
 def _bump_ok(data=None):
@@ -171,12 +182,19 @@ def api_objetivo_completar(request, pk):
         return _err('Objetivo no encontrado.', 404)
     if obj.dueno_id != request.user.id:
         return _err('Solo el dueño puede marcar el objetivo completo.', 403)
+    bloqueadas, reabiertas = 0, 0
     with transaction.atomic():
         for t in obj.tareas.all():
+            # Misma regla que api_tarea_actualizar: una tarea bloqueada no se completa
+            if services.tarea_bloqueada(t):
+                bloqueadas += 1
+                continue
             t.subtareas.update(estado=ESTADO_COMPLETADO)
             t.estado = ESTADO_COMPLETADO
             t.save(update_fields=['estado'])
-    return _bump_ok()
+            if services.reabrir_si_recurrente(t):
+                reabiertas += 1
+    return _bump_ok({'reabierta': reabiertas > 0, 'bloqueadas': bloqueadas})
 
 
 @login_required
@@ -236,11 +254,14 @@ def api_tarea_crear(request, pk):
         return _err('El título es obligatorio.')
     prioridad = d.get('prioridad') if d.get('prioridad') in _PRIOS_VALIDAS else 'media'
     recurrencia = d.get('recurrencia') if d.get('recurrencia') in _RECURRENCIAS_VALIDAS else ''
+    vence, error = _vence(d.get('vence'))
+    if error:
+        return _err(error)
     siguiente_orden = obj.tareas.count()
     with transaction.atomic():
         t = Tarea.objects.create(
             objetivo=obj, titulo=titulo, responsable=_usuario(d.get('responsable')),
-            prioridad=prioridad, vence=(d.get('vence') or None),
+            prioridad=prioridad, vence=vence,
             recurrencia=recurrencia, orden=siguiente_orden)
     return _bump_ok({'id': services.tid(t.id)})
 
@@ -269,8 +290,8 @@ def api_tarea_actualizar(request, pk):
                 return _err('Estado inválido.')
             t.estado = nuevo
             t.save(update_fields=['estado'])
-            if nuevo == ESTADO_COMPLETADO:
-                services.reabrir_si_recurrente(t)
+            if nuevo == ESTADO_COMPLETADO and services.reabrir_si_recurrente(t):
+                return _bump_ok({'reabierta': True})
         else:
             # Edición estructural: requiere permiso de edición
             if not services.puede_editar(obj, request.user):
@@ -280,13 +301,20 @@ def api_tarea_actualizar(request, pk):
                 if not titulo:
                     return _err('El título es obligatorio.')
                 t.titulo = titulo
-            if 'prioridad' in d and d['prioridad'] in _PRIOS_VALIDAS:
+            if 'prioridad' in d:
+                if d['prioridad'] not in _PRIOS_VALIDAS:
+                    return _err('Prioridad inválida.')
                 t.prioridad = d['prioridad']
             if 'vence' in d:
-                t.vence = d.get('vence') or None
+                vence, error = _vence(d.get('vence'))
+                if error:
+                    return _err(error)
+                t.vence = vence
             if 'responsable' in d:
                 t.responsable = _usuario(d.get('responsable'))
-            if 'recurrencia' in d and d['recurrencia'] in _RECURRENCIAS_VALIDAS:
+            if 'recurrencia' in d:
+                if d['recurrencia'] not in _RECURRENCIAS_VALIDAS:
+                    return _err('Recurrencia inválida.')
                 t.recurrencia = d['recurrencia']
             if 'estado' in d and d['estado'] in _ESTADOS_VALIDOS and not list(t.subtareas.all()):
                 t.estado = d['estado']
@@ -362,7 +390,8 @@ def api_subtarea_actualizar(request, pk):
                 return _err('Estado inválido.')
             s.estado = d['estado']
             s.save(update_fields=['estado'])
-            services.recalcular_estado_tarea(s.tarea)
+            if services.recalcular_estado_tarea(s.tarea) and services.reabrir_si_recurrente(s.tarea):
+                return _bump_ok({'reabierta': True})
         else:
             if not services.puede_editar(obj, request.user):
                 return _err('Sin permiso de edición.', 403)

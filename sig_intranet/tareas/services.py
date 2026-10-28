@@ -98,11 +98,17 @@ def objetivo_completado(obj):
 
 def dep_cumplida(dep):
     if dep.objetivo_destino_id:
-        return objetivo_completado(dep.objetivo_destino)
+        tareas = list(dep.objetivo_destino.tareas.all())
+        return len(tareas) > 0 and all(tarea_cumplida_para_dependencia(t) for t in tareas)
     if dep.tarea_destino_id:
-        return tarea_completada(dep.tarea_destino)
+        return tarea_cumplida_para_dependencia(dep.tarea_destino)
     if dep.subtarea_destino_id:
-        return dep.subtarea_destino.estado == ESTADO_COMPLETADO
+        sub = dep.subtarea_destino
+        # Si la tarea padre es recurrente, sus subtareas se reabren con ella:
+        # el ciclo vigente del padre es lo que decide.
+        if sub.tarea.recurrencia:
+            return ciclo_recurrente_vigente(sub.tarea)
+        return sub.estado == ESTADO_COMPLETADO
     return True
 
 
@@ -122,17 +128,19 @@ def estado_efectivo_tarea(tarea):
 
 
 def recalcular_estado_tarea(tarea):
-    """Ajusta el estado de la tarea según sus subtareas (rollup hacia arriba)."""
+    """Ajusta el estado de la tarea según sus subtareas (rollup hacia arriba).
+    Devuelve True si la tarea quedó completada por este recálculo. NO reabre
+    recurrentes: eso lo decide la vista, solo cuando el usuario completa una
+    subtarea (si no, borrar una subtarea reabriría el ciclo y perdería avance)."""
     subs = list(tarea.subtareas.all())
     if not subs:
-        return
+        return False
     if all(s.estado == ESTADO_COMPLETADO for s in subs):
         tarea.estado = ESTADO_COMPLETADO
     elif tarea.estado == ESTADO_COMPLETADO:
         tarea.estado = ESTADO_EN_CURSO
     tarea.save(update_fields=['estado'])
-    if tarea.estado == ESTADO_COMPLETADO:
-        reabrir_si_recurrente(tarea)
+    return tarea.estado == ESTADO_COMPLETADO
 
 
 # ----- Recurrencia -----
@@ -162,11 +170,29 @@ def reabrir_si_recurrente(tarea):
         return False
     hoy = timezone.localdate()
     base = tarea.vence if (tarea.vence and tarea.vence >= hoy) else hoy
+    tarea.ultima_completada = hoy
     tarea.vence = siguiente_vencimiento(base, tarea.recurrencia)
     tarea.estado = ESTADO_PENDIENTE
-    tarea.save(update_fields=['estado', 'vence'])
+    tarea.save(update_fields=['estado', 'vence', 'ultima_completada'])
     tarea.subtareas.update(estado=ESTADO_PENDIENTE)
     return True
+
+
+def ciclo_recurrente_vigente(tarea):
+    """¿La tarea recurrente ya se cumplió en el ciclo actual? Vale hasta que
+    toque el siguiente vencimiento (diaria: hoy; semanal: 7 días; etc.)."""
+    if not tarea.recurrencia or not tarea.ultima_completada:
+        return False
+    proxima = siguiente_vencimiento(tarea.ultima_completada, tarea.recurrencia)
+    return bool(proxima and proxima > timezone.localdate())
+
+
+def tarea_cumplida_para_dependencia(tarea):
+    """Completado visto por una dependencia: una recurrente cuenta como
+    cumplida mientras su ciclo esté vigente, aunque ya haya vuelto a pendiente."""
+    if tarea.recurrencia:
+        return ciclo_recurrente_vigente(tarea)
+    return tarea_completada(tarea)
 
 
 # ----- Visibilidad y permisos -----

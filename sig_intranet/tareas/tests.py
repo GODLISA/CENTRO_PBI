@@ -16,6 +16,7 @@ from .models import (
     Dependencia, Objetivo, Subtarea, Tarea,
     ESTADO_COMPLETADO, ESTADO_PENDIENTE,
 )
+from django.utils.dateparse import parse_date  # noqa: F401  (usado en los tests de validación)
 
 User = get_user_model()
 
@@ -211,3 +212,124 @@ class UsuariosOrdenTests(TestCase):
         nombres = [u['nombre'] for u in services.serializar_tablero(yo)['usuarios']]
         self.assertEqual(nombres, sorted(nombres, key=str.casefold))
         self.assertEqual(nombres[0], 'Ana Zu')
+
+
+class RecurrenciaDependenciasTests(TestCase):
+    """Una dependencia bloqueante hacia una recurrente se cumple mientras el
+    ciclo esté vigente; si no, la recurrente bloquearía para siempre."""
+
+    def setUp(self):
+        self.dueno = User.objects.create_user('dueno_dep', password='x')
+        self.objetivo = Objetivo.objects.create(titulo='Planta', dueno=self.dueno)
+        self.recurrente = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Ronda diaria', responsable=self.dueno,
+            recurrencia='diaria')
+        self.dependiente = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Informe', responsable=self.dueno)
+        Dependencia.objects.create(
+            tarea_origen=self.dependiente, tarea_destino=self.recurrente, bloqueante=True)
+        self.client.force_login(self.dueno)
+
+    def _completar(self, tarea):
+        return self.client.post(
+            reverse('tareas_tarea_actualizar', args=[tarea.id]),
+            data=json.dumps({'estado': ESTADO_COMPLETADO}),
+            content_type='application/json')
+
+    def test_bloquea_antes_de_completar(self):
+        self.assertTrue(services.tarea_bloqueada(self.dependiente))
+
+    def test_desbloquea_tras_completar_la_recurrente(self):
+        resp = self._completar(self.recurrente)
+        self.assertTrue(_json(resp)['data']['reabierta'])
+        self.recurrente.refresh_from_db()
+        self.assertEqual(self.recurrente.estado, ESTADO_PENDIENTE)
+        self.assertEqual(self.recurrente.ultima_completada, timezone.localdate())
+        self.dependiente.refresh_from_db()
+        self.assertFalse(services.tarea_bloqueada(self.dependiente))
+        self.assertEqual(_json(self._completar(self.dependiente)).get('success'), True)
+
+    def test_ciclo_vencido_vuelve_a_bloquear(self):
+        self.recurrente.ultima_completada = timezone.localdate() - datetime.timedelta(days=2)
+        self.recurrente.save(update_fields=['ultima_completada'])
+        self.assertFalse(services.ciclo_recurrente_vigente(self.recurrente))
+        self.assertTrue(services.tarea_bloqueada(self.dependiente))
+
+
+class RollupSinReaperturaTests(TestCase):
+    """Borrar o agregar subtareas recalcula el estado, pero NO reabre el ciclo:
+    si lo hiciera, se perdería el avance ya registrado."""
+
+    def setUp(self):
+        self.dueno = User.objects.create_user('dueno_roll', password='x')
+        self.objetivo = Objetivo.objects.create(titulo='Bodega', dueno=self.dueno)
+        self.tarea = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Inventario', responsable=self.dueno,
+            recurrencia='diaria')
+        self.s1 = Subtarea.objects.create(tarea=self.tarea, titulo='Pasillo 1', responsable=self.dueno)
+        self.s2 = Subtarea.objects.create(tarea=self.tarea, titulo='Pasillo 2', responsable=self.dueno)
+        self.client.force_login(self.dueno)
+
+    def test_borrar_hermana_no_resetea_la_completada(self):
+        self.client.post(
+            reverse('tareas_subtarea_actualizar', args=[self.s1.id]),
+            data=json.dumps({'estado': ESTADO_COMPLETADO}),
+            content_type='application/json')
+        self.client.post(reverse('tareas_subtarea_eliminar', args=[self.s2.id]))
+        self.s1.refresh_from_db()
+        self.assertEqual(self.s1.estado, ESTADO_COMPLETADO)
+
+
+class ObjetivoCompletarTests(TestCase):
+    """api_objetivo_completar respeta los bloqueos y reabre las recurrentes."""
+
+    def setUp(self):
+        self.dueno = User.objects.create_user('dueno_obj', password='x')
+        self.objetivo = Objetivo.objects.create(titulo='Cierre mes', dueno=self.dueno)
+        self.otro = Objetivo.objects.create(titulo='Previo', dueno=self.dueno)
+        self.previa = Tarea.objects.create(objetivo=self.otro, titulo='Previa', responsable=self.dueno)
+        self.bloqueada = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Bloqueada', responsable=self.dueno)
+        Dependencia.objects.create(
+            tarea_origen=self.bloqueada, tarea_destino=self.previa, bloqueante=True)
+        self.recurrente = Tarea.objects.create(
+            objetivo=self.objetivo, titulo='Semanal', responsable=self.dueno, recurrencia='semanal')
+        self.client.force_login(self.dueno)
+
+    def test_salta_bloqueadas_y_reabre_recurrentes(self):
+        resp = self.client.post(reverse('tareas_objetivo_completar', args=[self.objetivo.id]))
+        data = _json(resp)['data']
+        self.assertEqual(data['bloqueadas'], 1)
+        self.assertTrue(data['reabierta'])
+        self.bloqueada.refresh_from_db()
+        self.recurrente.refresh_from_db()
+        self.assertEqual(self.bloqueada.estado, ESTADO_PENDIENTE)
+        self.assertEqual(self.recurrente.estado, ESTADO_PENDIENTE)
+        self.assertEqual(self.recurrente.ultima_completada, timezone.localdate())
+
+
+class ValidacionEntradaTests(TestCase):
+    """La API responde 400 con el envelope, no 500, ante entradas inválidas."""
+
+    def setUp(self):
+        self.dueno = User.objects.create_user('dueno_val', password='x')
+        self.objetivo = Objetivo.objects.create(titulo='Val', dueno=self.dueno)
+        self.client.force_login(self.dueno)
+
+    def test_vence_invalido(self):
+        resp = self.client.post(
+            reverse('tareas_tarea_crear', args=[self.objetivo.id]),
+            data=json.dumps({'titulo': 'X', 'vence': 'no-es-fecha'}),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        self.assertFalse(_json(resp)['success'])
+
+    def test_recurrencia_invalida(self):
+        t = Tarea.objects.create(objetivo=self.objetivo, titulo='T', recurrencia='semanal')
+        resp = self.client.post(
+            reverse('tareas_tarea_actualizar', args=[t.id]),
+            data=json.dumps({'titulo': 'T', 'recurrencia': 'anual'}),
+            content_type='application/json')
+        self.assertEqual(resp.status_code, 400)
+        t.refresh_from_db()
+        self.assertEqual(t.recurrencia, 'semanal')

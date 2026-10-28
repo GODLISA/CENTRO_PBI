@@ -30,8 +30,18 @@
   // Filtros de visualización del lienzo (solo UI; no tocan los datos)
   var filtros = { responsable: '', estado: '', ocultarCompletadas: false };
   // Zonas por dueño: cada usuario tiene una región del lienzo
-  var zonasOn = true;
+  var zonasOn = leerPref('tb_zonas', true);
   var zonas = {};
+
+  function leerPref(clave, porDefecto) {
+    try {
+      var v = window.localStorage.getItem(clave);
+      return v === null ? porDefecto : v === '1';
+    } catch (e) { return porDefecto; }
+  }
+  function guardarPref(clave, valor) {
+    try { window.localStorage.setItem(clave, valor ? '1' : '0'); } catch (e) { /* modo privado */ }
+  }
 
   // ----- API -----
   function readConfig() {
@@ -91,6 +101,11 @@
     return p.then(function (res) {
       if (res.ok && res.j && res.j.success) {
         if (res.j.data && res.j.data.version != null) lastVersion = res.j.data.version;
+        // El servidor reabrió una tarea recurrente: el estado local quedó obsoleto
+        if (res.j.data && res.j.data.reabierta) {
+          toast('Tarea recurrente reabierta con el siguiente vencimiento.', 'success');
+          return recargar();
+        }
       } else {
         toast((res.j && res.j.message) || 'No se pudo guardar.', 'error');
         recargar();
@@ -190,7 +205,8 @@
     return !!(filtros.responsable || filtros.estado || filtros.ocultarCompletadas);
   }
   function taskPasaFiltro(t) {
-    if (filtros.responsable && t.assignee !== filtros.responsable) return false;
+    if (filtros.responsable && t.assignee !== filtros.responsable &&
+        !(t.subtasks || []).some(function (s) { return s.assignee === filtros.responsable; })) return false;
     var es = effTaskState(t);
     if (filtros.estado && es !== filtros.estado) return false;
     if (filtros.ocultarCompletadas && es === 'completado') return false;
@@ -198,6 +214,7 @@
   }
   function bubbleVisible(b) {
     if (!hayFiltros()) return true;
+    if (!b.tasks.length) return true;
     return b.tasks.some(taskPasaFiltro);
   }
   function bubblesVisibles() { return DATA.bubbles.filter(bubbleVisible); }
@@ -285,8 +302,10 @@
 
   function calcularZonas() {
     zonas = {};
+    // Sobre TODAS las burbujas, no las filtradas: si no, la geometría cambiaría
+    // al filtrar y las posiciones guardadas quedarían fuera de su zona.
     var duenos = [];
-    bubblesVisibles().forEach(function (b) { if (duenos.indexOf(b.ownerId) < 0) duenos.push(b.ownerId); });
+    DATA.bubbles.forEach(function (b) { if (duenos.indexOf(b.ownerId) < 0) duenos.push(b.ownerId); });
     duenos.sort(function (a, b) { return userName(a).localeCompare(userName(b)); });
     var cols = Math.max(1, Math.ceil(Math.sqrt(duenos.length)));
     duenos.forEach(function (uid, i) {
@@ -301,10 +320,16 @@
     var z = zonas[b.ownerId];
     if (!zonasOn || !z) return pos;
     var r = bubbleSize(b) / 2 + ZONA_PAD;
-    return {
-      x: Math.min(Math.max(pos.x, z.x + r), z.x + z.w - r),
-      y: Math.min(Math.max(pos.y, z.y + r), z.y + z.h - r)
-    };
+    function eje(valor, inicio, largo) {
+      var lo = inicio + r, hi = inicio + largo - r;
+      if (lo > hi) return inicio + largo / 2;  // la burbuja es más grande que la zona
+      return Math.min(Math.max(valor, lo), hi);
+    }
+    return { x: eje(pos.x, z.x, z.w), y: eje(pos.y, z.y, z.h) };
+  }
+  function dentroDeZona(b, pos) {
+    var c = clampAZona(b, pos);
+    return Math.abs(c.x - pos.x) < 0.5 && Math.abs(c.y - pos.y) < 0.5;
   }
   function applyZoneLayout() {
     var porDueno = {};
@@ -316,9 +341,12 @@
       var z = zonas[uid];
       if (!z) return;
       var arr = porDueno[uid].sort(function (a, b) { return (b.data('weight') || 0) - (a.data('weight') || 0); });
-      var cols = Math.max(1, Math.ceil(Math.sqrt(arr.length)));
+      // La celda nunca debe ser menor que la burbuja más grande del dueño
+      var maxSize = Math.max.apply(null, arr.map(function (n) { return n.data('size') || 80; }));
+      var colsCaben = Math.max(1, Math.floor(z.w / (maxSize + 10)));
+      var cols = Math.min(Math.max(1, Math.ceil(Math.sqrt(arr.length))), colsCaben);
       var filas = Math.ceil(arr.length / cols);
-      var cw = z.w / cols, ch = (z.h - ZONA_PAD) / filas;
+      var cw = z.w / cols, ch = Math.max((z.h - ZONA_PAD) / filas, maxSize + 10);
       arr.forEach(function (n, i) {
         n.position({
           x: z.x + cw * ((i % cols) + 0.5),
@@ -453,7 +481,9 @@
     if (zonasOn) applyZoneLayout(); else applyAutoLayout();
     cy.nodes('.bubble').forEach(function (n) {
       var p = positions[n.id()], b = getBubble(n.id());
-      if (p && b) n.position(clampAZona(b, p));
+      // Si la posición guardada es de un layout anterior y cae fuera de la zona
+      // del dueño, se ignora y queda la que calculó applyZoneLayout.
+      if (p && b && (!zonasOn || dentroDeZona(b, p))) n.position(p);
     });
     cy.nodes('.ghost').forEach(function (g) { g.ungrabify(); });
     positionGhosts();
@@ -474,6 +504,11 @@
     if (prevPan && prevZoom) { cy.zoom(prevZoom); cy.pan(prevPan); }
     else { cy.resize(); cy.fit(undefined, 60); }
     syncOverlays();
+
+    if (openBubbleId) {
+      var abierta = getBubble(openBubbleId);
+      if (!abierta || !bubbleVisible(abierta)) closePanel();
+    }
   }
   function refreshAllVisuals() {
     DATA.bubbles.forEach(function (b) { if (overlays[b.id]) updateOverlayVisual(b); });
@@ -909,9 +944,10 @@
   var modal = document.getElementById('tb-modal');
   var modalTitle = document.getElementById('tb-modal-title');
   var modalBody = document.getElementById('tb-modal-body');
-  function openModal(title, bodyHtml, onOk, okLabel) {
+  function openModal(title, bodyHtml, onOk, okLabel, ancha) {
     document.getElementById('tb-modal-ok').textContent = okLabel || 'Guardar';
     document.getElementById('tb-modal-cancel').style.display = okLabel ? 'none' : '';
+    modal.querySelector('.tb-modal-card').classList.toggle('ancha', !!ancha);
     modalTitle.textContent = title;
     modalBody.innerHTML = bodyHtml;
     modalOkHandler = onOk;
@@ -959,7 +995,9 @@
 
   // ----- Resumen por usuario -----
   function resumenPorUsuario() {
-    var hoy = new Date().toISOString().slice(0, 10);
+    // Fecha LOCAL en formato AAAA-MM-DD: toISOString() daría UTC y de noche
+    // (Chile UTC-3/-4) contaría como vencidas las que vencen hoy.
+    var hoy = new Date().toLocaleDateString('sv-SE');
     var filas = {};
     function fila(uid) {
       if (!filas[uid]) filas[uid] = { uid: uid, pendiente: 0, en_curso: 0, completado: 0, bloqueado: 0, vencidas: 0, total: 0 };
@@ -989,8 +1027,8 @@
       html = '<div class="tb-empty">No hay tareas asignadas.</div>';
     } else {
       html = '<table class="tb-resumen"><thead><tr>' +
-        '<th>Usuario</th><th>Total</th><th>Pendientes</th><th>En curso</th>' +
-        '<th>Bloqueadas</th><th>Completadas</th><th>Vencidas</th></tr></thead><tbody>';
+        '<th>Usuario</th><th class="num">Total</th><th class="num">Pendientes</th><th class="num">En curso</th>' +
+        '<th class="num">Bloqueadas</th><th class="num">Completadas</th><th class="num">Vencidas</th></tr></thead><tbody>';
       filas.forEach(function (f) {
         html += '<tr>' +
           '<td>' + escapeHtml(userName(f.uid)) + '</td>' +
@@ -1006,7 +1044,7 @@
         '<div class="tb-hint">Cuenta tareas y subtareas de las burbujas que puedes ver. ' +
         'Vencidas: con fecha límite pasada y sin completar.</div>';
     }
-    openModal('Resumen de tareas por usuario', html, null, 'Cerrar');
+    openModal('Resumen de tareas por usuario', html, null, 'Cerrar', true);
   }
 
   // ----- Filtros de la barra -----
@@ -1027,7 +1065,21 @@
   }
 
   // ----- Toolbar -----
+  function sincronizarBotonZonas() {
+    var btn = document.getElementById('btn-zonas');
+    if (!btn) return;
+    btn.textContent = zonasOn ? 'Zonas: sí' : 'Zonas: no';
+    btn.classList.toggle('tb-btn-on', zonasOn);
+  }
+  // Al filtrar cambia la geometría del lienzo: reencuadrar para no dejar al
+  // usuario mirando una zona que ahora está vacía.
+  function aplicarFiltro() {
+    render();
+    if (cy) { cy.fit(undefined, 60); syncOverlays(); }
+  }
+
   function wireToolbar() {
+    sincronizarBotonZonas();
     document.getElementById('btn-nuevo-objetivo').addEventListener('click', modalNewBubble);
     document.getElementById('btn-reordenar').addEventListener('click', function () {
       // Reacomoda (por zona de dueño, o por peso si las zonas están apagadas)
@@ -1037,18 +1089,18 @@
     document.getElementById('btn-resumen').addEventListener('click', modalResumen);
     document.getElementById('btn-zonas').addEventListener('click', function () {
       zonasOn = !zonasOn;
-      this.textContent = zonasOn ? 'Zonas: sí' : 'Zonas: no';
-      this.classList.toggle('tb-btn-on', zonasOn);
+      guardarPref('tb_zonas', zonasOn);
+      sincronizarBotonZonas();
       reubicarYPersistir(zonasOn ? 'Burbujas agrupadas en la zona de su dueño.' : 'Zonas desactivadas.');
     });
     document.getElementById('f-resp').addEventListener('change', function () {
-      filtros.responsable = this.value; render();
+      filtros.responsable = this.value; aplicarFiltro();
     });
     document.getElementById('f-estado').addEventListener('change', function () {
-      filtros.estado = this.value; render();
+      filtros.estado = this.value; aplicarFiltro();
     });
     document.getElementById('f-completadas').addEventListener('change', function () {
-      filtros.ocultarCompletadas = this.checked; render();
+      filtros.ocultarCompletadas = this.checked; aplicarFiltro();
     });
     document.getElementById('pl-cerrar').addEventListener('click', closePanel);
     overlay.addEventListener('click', closePanel);
