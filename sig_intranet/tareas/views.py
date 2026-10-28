@@ -6,6 +6,7 @@ Toda regla de privacidad/permisos se valida AQUÍ (servidor), no se confía
 en el front. Escrituras: @require_POST + CSRF (header X-CSRFToken) + atomic.
 """
 import json
+import re
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -17,7 +18,7 @@ from django.views.decorators.http import require_GET, require_POST
 
 from . import services
 from .models import (
-    Dependencia, Objetivo, ObjetivoMiembro, Subtarea, Tarea,
+    Dependencia, Objetivo, ObjetivoMiembro, PreferenciaUsuario, Subtarea, Tarea,
     ESTADOS, PRIORIDADES, RECURRENCIAS, PERMISO_VER, PERMISO_EDITAR, ESTADO_COMPLETADO,
 )
 
@@ -26,6 +27,7 @@ User = get_user_model()
 _ESTADOS_VALIDOS = {c[0] for c in ESTADOS}
 _PRIOS_VALIDAS = {c[0] for c in PRIORIDADES}
 _RECURRENCIAS_VALIDAS = {c[0] for c in RECURRENCIAS}
+_RE_COLOR = re.compile(r'^#[0-9a-fA-F]{6}$')
 
 
 # ----- Helpers de respuesta -----
@@ -138,6 +140,19 @@ def api_objetivo_actualizar(request, pk):
                 return _err('Solo el dueño cambia la privacidad.', 403)
             obj.es_privada = bool(d.get('es_privada'))
         obj.save()
+    return _bump_ok()
+
+
+@login_required
+@require_POST
+def api_mi_color(request):
+    """Color propio: pinta la zona y las burbujas del usuario. '' = sin color."""
+    color = str(_body(request).get('color') or '').strip()
+    if color and not _RE_COLOR.match(color):
+        return _err('Color inválido. Usa el formato #RRGGBB.')
+    PreferenciaUsuario.objects.update_or_create(
+        usuario=request.user, defaults={'color': color.lower()})
+    # Lo ven todos: se sube la versión para que el polling lo propague.
     return _bump_ok()
 
 

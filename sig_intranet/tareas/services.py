@@ -11,7 +11,7 @@ from django.db.models import F, Q
 from django.utils import timezone
 
 from .models import (
-    CambioTablero, Dependencia, Objetivo, Subtarea, Tarea,
+    CambioTablero, Dependencia, Objetivo, PreferenciaUsuario, Subtarea, Tarea,
     ESTADO_COMPLETADO, ESTADO_EN_CURSO, ESTADO_PENDIENTE, PERMISO_EDITAR,
     RECURRENCIA_DIARIA, RECURRENCIA_SEMANAL, RECURRENCIA_MENSUAL,
 )
@@ -347,8 +347,10 @@ def serializar_tablero(user):
     visible_ids = set(o.id for o in visibles)
     objetivos = [_serializar_objetivo(o, visible_ids) for o in visibles]
     # Orden alfabético por el nombre que se muestra, no por username
+    colores = dict(PreferenciaUsuario.objects.values_list('usuario_id', 'color'))
     usuarios = sorted(
-        ({'id': uid(u.id), 'nombre': u.get_full_name() or u.username}
+        ({'id': uid(u.id), 'nombre': u.get_full_name() or u.username,
+          'color': colores.get(u.id) or ''}
          for u in User.objects.filter(is_active=True)),
         key=lambda x: x['nombre'].casefold(),
     )

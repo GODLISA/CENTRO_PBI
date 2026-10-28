@@ -186,6 +186,22 @@ class Dependencia(models.Model):
         return f'subtarea:{self.subtarea_destino_id}'
 
 
+class PreferenciaUsuario(models.Model):
+    """Personalización del tablero por usuario: color de su zona y sus burbujas.
+    Color vacío = estilo por defecto. Formato #RRGGBB (validado en la vista)."""
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+        related_name='pref_tablero')
+    color = models.CharField(max_length=7, blank=True, default='')
+
+    class Meta:
+        verbose_name = 'Preferencia de tablero'
+        verbose_name_plural = 'Preferencias de tablero'
+
+    def __str__(self):
+        return '%s: %s' % (self.usuario, self.color or 'sin color')
+
+
 class CambioTablero(models.Model):
     """Contador global de versión del tablero. Fila única (pk=1).
     Se incrementa en cada escritura; el front hace polling de este valor."""

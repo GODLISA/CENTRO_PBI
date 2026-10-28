@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import (
-    CambioTablero, Dependencia, Objetivo, ObjetivoMiembro, Subtarea, Tarea,
+    CambioTablero, Dependencia, Objetivo, ObjetivoMiembro, PreferenciaUsuario,
+    Subtarea, Tarea,
 )
 
 
@@ -40,6 +41,11 @@ class TareaAdmin(admin.ModelAdmin):
 @admin.register(Dependencia)
 class DependenciaAdmin(admin.ModelAdmin):
     list_display = ('tarea_origen', 'destino_label', 'bloqueante')
+
+
+@admin.register(PreferenciaUsuario)
+class PreferenciaUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'color')
 
 
 admin.site.register(CambioTablero)

@@ -9,6 +9,9 @@ urlpatterns = [
     path('api/tablero/', views.api_tablero, name='tareas_api_tablero'),
     path('api/version/', views.api_version, name='tareas_api_version'),
 
+    # Personalización del usuario
+    path('api/mi-color/', views.api_mi_color, name='tareas_mi_color'),
+
     # Objetivos
     path('api/objetivo/crear/', views.api_objetivo_crear, name='tareas_objetivo_crear'),
     path('api/objetivo/<int:pk>/actualizar/', views.api_objetivo_actualizar, name='tareas_objetivo_actualizar'),

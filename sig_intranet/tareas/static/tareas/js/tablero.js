@@ -124,6 +124,17 @@
     });
   }
   function getBubble(id) { return DATA.bubbles.find(function (b) { return b.id === id; }); }
+  // Color elegido por el usuario (vacio = estilo por defecto)
+  function userColor(id) {
+    var u = USERS.find(function (x) { return x.id === id; });
+    return (u && u.color) || '';
+  }
+  function hexRgba(hex, alfa) {
+    var m = /^#?([0-9a-fA-F]{6})$/.exec(hex || '');
+    if (!m) return null;
+    var n = parseInt(m[1], 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + alfa + ')';
+  }
   function findTask(id) {
     for (var i = 0; i < DATA.bubbles.length; i++) {
       var t = DATA.bubbles[i].tasks.find(function (x) { return x.id === id; });
@@ -236,6 +247,14 @@
   // Crecimiento de la burbuja según su peso (tareas x1 + subtareas x0,1)
   var SIZE_BASE = 60, SIZE_FACTOR = 70;
   function bubbleSize(b) { return Math.round(SIZE_BASE + SIZE_FACTOR * Math.sqrt(bubbleWeight(b))); }
+  // Un titulo largo en una burbuja chica se salia del circulo. El area util
+  // dentro de la circunferencia es ~0,30 del ancho al cuadrado; cada caracter
+  // ocupa ~0,62 del tamano de letra al cuadrado.
+  function labelFontSize(w, titulo) {
+    var n = Math.max(10, String(titulo || '').length);
+    var fs = Math.sqrt((w * w * 0.30) / (n * 0.62));
+    return Math.max(7, Math.min(18, Math.min(fs, w * 0.125)));
+  }
 
   // ----- Elementos del grafo -----
   function buildElements() {
@@ -297,81 +316,114 @@
   ];
 
   // ----- Zonas por dueño -----
-  var ZONA_W = 900, ZONA_H = 650, ZONA_GAP = 70, ZONA_PAD = 26;
+  // La zona se dimensiona a partir de las burbujas que contiene (antes era fija
+  // de 900x650 y las burbujas se salían por abajo o se encimaban entre zonas).
+  var ZONA_PAD = 26, ZONA_HEAD = 26, ZONA_GAP = 70, CELDA_GAP = 18, ZONA_MAX_W = 1500;
   var zoneEls = {};
+  var zonaPos = {};   // posición calculada de cada burbuja dentro de su zona
 
   function calcularZonas() {
-    zonas = {};
+    zonas = {}; zonaPos = {};
     // Sobre TODAS las burbujas, no las filtradas: si no, la geometría cambiaría
     // al filtrar y las posiciones guardadas quedarían fuera de su zona.
-    var duenos = [];
-    DATA.bubbles.forEach(function (b) { if (duenos.indexOf(b.ownerId) < 0) duenos.push(b.ownerId); });
+    var porDueno = {}, duenos = [];
+    DATA.bubbles.forEach(function (b) {
+      if (!porDueno[b.ownerId]) { porDueno[b.ownerId] = []; duenos.push(b.ownerId); }
+      porDueno[b.ownerId].push(b);
+    });
+    if (!duenos.length) return;
     duenos.sort(function (a, b) { return userName(a).localeCompare(userName(b)); });
-    var cols = Math.max(1, Math.ceil(Math.sqrt(duenos.length)));
-    duenos.forEach(function (uid, i) {
-      zonas[uid] = {
-        x: (i % cols) * (ZONA_W + ZONA_GAP),
-        y: Math.floor(i / cols) * (ZONA_H + ZONA_GAP),
-        w: ZONA_W, h: ZONA_H, label: userName(uid)
+
+    var cajas = duenos.map(function (duid) {
+      var arr = porDueno[duid].slice().sort(function (a, b) {
+        var d = bubbleWeight(b) - bubbleWeight(a);
+        return d !== 0 ? d : String(a.id).localeCompare(String(b.id));
+      });
+      // Celda cuadrada del tamaño de la burbuja más grande del dueño: así
+      // ninguna se encima ni se sale, cualquiera sea su peso.
+      var celda = Math.max.apply(null, arr.map(bubbleSize)) + CELDA_GAP;
+      var cabenAncho = Math.max(1, Math.floor((ZONA_MAX_W - 2 * ZONA_PAD) / celda));
+      var cols = Math.max(1, Math.min(Math.ceil(Math.sqrt(arr.length)), cabenAncho));
+      var filas = Math.ceil(arr.length / cols);
+      return {
+        uid: duid, arr: arr, celda: celda, cols: cols,
+        w: cols * celda + 2 * ZONA_PAD,
+        h: filas * celda + 2 * ZONA_PAD + ZONA_HEAD
       };
+    });
+
+    // Empaquetado en filas: ancho objetivo ~ raíz del área total (tablero más
+    // o menos cuadrado), nunca menor que la zona más ancha.
+    var areaTotal = 0, anchoMax = 0;
+    cajas.forEach(function (c) { areaTotal += c.w * c.h; anchoMax = Math.max(anchoMax, c.w); });
+    var objetivo = Math.max(anchoMax, Math.sqrt(areaTotal * 1.6));
+    var x = 0, y = 0, altoFila = 0;
+    cajas.forEach(function (c) {
+      if (x > 0 && x + c.w > objetivo) { x = 0; y += altoFila + ZONA_GAP; altoFila = 0; }
+      zonas[c.uid] = {
+        x: x, y: y, w: c.w, h: c.h,
+        label: userName(c.uid), color: userColor(c.uid)
+      };
+      var zx = x, zy = y;
+      c.arr.forEach(function (b, i) {
+        zonaPos[b.id] = {
+          x: zx + ZONA_PAD + c.celda * ((i % c.cols) + 0.5),
+          y: zy + ZONA_PAD + ZONA_HEAD + c.celda * (Math.floor(i / c.cols) + 0.5)
+        };
+      });
+      x += c.w + ZONA_GAP;
+      altoFila = Math.max(altoFila, c.h);
     });
   }
   function clampAZona(b, pos) {
     var z = zonas[b.ownerId];
     if (!zonasOn || !z) return pos;
-    var r = bubbleSize(b) / 2 + ZONA_PAD;
-    function eje(valor, inicio, largo) {
-      var lo = inicio + r, hi = inicio + largo - r;
-      if (lo > hi) return inicio + largo / 2;  // la burbuja es más grande que la zona
+    var r = bubbleSize(b) / 2 + 6;
+    function eje(valor, inicio, largo, desde) {
+      var lo = inicio + desde + r, hi = inicio + largo - r;
+      if (lo > hi) return inicio + desde + (largo - desde) / 2;  // burbuja mayor que la zona
       return Math.min(Math.max(valor, lo), hi);
     }
-    return { x: eje(pos.x, z.x, z.w), y: eje(pos.y, z.y, z.h) };
+    return {
+      x: eje(pos.x, z.x, z.w, ZONA_PAD),
+      y: eje(pos.y, z.y, z.h, ZONA_PAD + ZONA_HEAD)
+    };
   }
   function dentroDeZona(b, pos) {
     var c = clampAZona(b, pos);
     return Math.abs(c.x - pos.x) < 0.5 && Math.abs(c.y - pos.y) < 0.5;
   }
   function applyZoneLayout() {
-    var porDueno = {};
     cy.nodes('.bubble').forEach(function (n) {
-      var b = getBubble(n.id());
-      if (b) (porDueno[b.ownerId] = porDueno[b.ownerId] || []).push(n);
-    });
-    Object.keys(porDueno).forEach(function (uid) {
-      var z = zonas[uid];
-      if (!z) return;
-      var arr = porDueno[uid].sort(function (a, b) { return (b.data('weight') || 0) - (a.data('weight') || 0); });
-      // La celda nunca debe ser menor que la burbuja más grande del dueño
-      var maxSize = Math.max.apply(null, arr.map(function (n) { return n.data('size') || 80; }));
-      var colsCaben = Math.max(1, Math.floor(z.w / (maxSize + 10)));
-      var cols = Math.min(Math.max(1, Math.ceil(Math.sqrt(arr.length))), colsCaben);
-      var filas = Math.ceil(arr.length / cols);
-      var cw = z.w / cols, ch = Math.max((z.h - ZONA_PAD) / filas, maxSize + 10);
-      arr.forEach(function (n, i) {
-        n.position({
-          x: z.x + cw * ((i % cols) + 0.5),
-          y: z.y + ZONA_PAD + ch * (Math.floor(i / cols) + 0.5)
-        });
-      });
+      var p = zonaPos[n.id()];
+      if (p) n.position(p);
     });
   }
   function createZones() {
     zoneEls = {};
     if (!zonasOn) return;
     var layer = document.getElementById('tb-overlay-layer');
-    Object.keys(zonas).forEach(function (uid) {
+    Object.keys(zonas).forEach(function (duid) {
+      var z = zonas[duid];
       var el = document.createElement('div');
       el.className = 'tb-zone';
-      el.innerHTML = '<span class="tb-zone-label">' + escapeHtml(zonas[uid].label) + '</span>';
+      el.innerHTML = '<span class="tb-zone-label">' + escapeHtml(z.label) + '</span>';
+      var borde = hexRgba(z.color, 0.6);
+      if (borde) {
+        el.style.borderColor = borde;
+        el.style.borderStyle = 'solid';
+        el.style.background = hexRgba(z.color, 0.12);
+        el.querySelector('.tb-zone-label').style.color = hexRgba(z.color, 0.95);
+      }
       layer.appendChild(el);
-      zoneEls[uid] = el;
+      zoneEls[duid] = el;
     });
   }
   function syncZones() {
     if (!cy) return;
     var zoom = cy.zoom(), pan = cy.pan();
-    Object.keys(zoneEls).forEach(function (uid) {
-      var z = zonas[uid], s = zoneEls[uid].style;
+    Object.keys(zoneEls).forEach(function (duid) {
+      var z = zonas[duid], s = zoneEls[duid].style;
       s.left = (z.x * zoom + pan.x) + 'px';
       s.top = (z.y * zoom + pan.y) + 'px';
       s.width = (z.w * zoom) + 'px';
@@ -415,6 +467,7 @@
     var layer = document.getElementById('tb-overlay-layer');
     layer.innerHTML = '';
     overlays = {};
+    tipEl = null;
     createZones();
     cy.nodes('.bubble').forEach(function (n) {
       var b = getBubble(n.id());
@@ -430,6 +483,8 @@
           '<div class="bubble-label"><span class="ttl">' + escapeHtml(b.title) + '</span><span class="pct">' + pct + '%</span></div>' +
         '</div>';
       layer.appendChild(node);
+      var tinte = hexRgba(userColor(b.ownerId), 0.22);
+      if (tinte) node.querySelector('.bubble-glass').style.backgroundColor = tinte;
       var liquid = node.querySelector('.bubble-liquid');
       overlays[b.id] = { el: node, liquid: liquid, label: node.querySelector('.bubble-label'),
         ttl: node.querySelector('.ttl'), pctEl: node.querySelector('.pct') };
@@ -446,7 +501,8 @@
       var p = n.renderedPosition(), w = n.renderedWidth();
       var s = ov.el.style;
       s.left = p.x + 'px'; s.top = p.y + 'px'; s.width = w + 'px'; s.height = w + 'px';
-      ov.label.style.fontSize = Math.max(8, Math.min(18, w * 0.125)).toFixed(1) + 'px';
+      var b = getBubble(n.id());
+      ov.label.style.fontSize = labelFontSize(w, b ? b.title : '').toFixed(1) + 'px';
     });
   }
   function updateOverlayVisual(b) {
@@ -463,6 +519,31 @@
       overlays[id].el.classList.toggle('selected', id === openBubbleId);
     });
   }
+
+  // Tooltip flotante: la etiqueta se recorta en las burbujas chicas, así que
+  // el nombre completo se muestra al pasar el mouse.
+  var tipEl = null;
+  function mostrarTip(n) {
+    var b = getBubble(n.id());
+    if (!b) return;
+    if (!tipEl) {
+      tipEl = document.createElement('div');
+      tipEl.className = 'tb-tip';
+      document.getElementById('tb-overlay-layer').appendChild(tipEl);
+    }
+    tipEl.textContent = b.title + ' · ' + bubblePct(b) + '%';
+    var p = n.renderedPosition(), r = n.renderedWidth() / 2;
+    var capa = document.getElementById('tb-overlay-layer');
+    // La capa recorta lo que se sale: si no cabe arriba, el tooltip va abajo,
+    // y el eje X se mantiene dentro del lienzo.
+    var arriba = p.y - r - 12, abajo = arriba < 40;
+    tipEl.classList.toggle('abajo', abajo);
+    tipEl.style.top = (abajo ? p.y + r + 12 : arriba) + 'px';
+    var medio = 135;  // la mitad del max-width del tooltip
+    tipEl.style.left = Math.min(Math.max(p.x, medio), Math.max(medio, capa.clientWidth - medio)) + 'px';
+    tipEl.classList.add('on');
+  }
+  function ocultarTip() { if (tipEl) tipEl.classList.remove('on'); }
 
   // ----- Render -----
   function render() {
@@ -491,6 +572,9 @@
 
     cy.on('render', syncOverlays);
     cy.on('tap', 'node.bubble', function (e) { openPanel(e.target.id()); });
+    cy.on('mouseover', 'node.bubble', function (e) { mostrarTip(e.target); });
+    cy.on('mouseout', 'node.bubble', ocultarTip);
+    cy.on('pan zoom drag', ocultarTip);
     cy.on('tap', 'node.ghost', function () { toast('Pertenece a una burbuja privada que no puedes ver.', 'error'); });
     cy.on('tap', function (e) { if (e.target === cy) closePanel(); });
     cy.on('dragfree', 'node.bubble', function (e) {
@@ -655,7 +739,9 @@
           (isOwner(b) ? '' : ' disabled title="Solo el dueño elimina"') + '>Eliminar</button>' +
       '</div>';
     }
-    return h + '</div></div>';
+    // Cierra .tb-task-main, .tb-task-head y .tb-task (faltaba el ultimo:
+    // sin el, el navegador anidaba cada tarea dentro de la anterior).
+    return h + '</div></div></div>';
   }
 
   function renderPanel(b) {
@@ -993,6 +1079,24 @@
       });
   }
 
+  // ----- Color propio -----
+  function modalColor() {
+    var actual = userColor(currentUser);
+    openModal('Mi color',
+      '<div class="tb-field"><label>Color de mi zona y de mis burbujas</label>' +
+        '<input type="color" id="m-color" class="tb-color" value="' + (actual || '#3498db') + '"></div>' +
+      '<div class="tb-field"><label class="tb-check-inline">' +
+        '<input type="checkbox" id="m-color-off"' + (actual ? '' : ' checked') + '> Sin color (estilo por defecto)' +
+      '</label></div>' +
+      '<div class="tb-hint">Pinta la zona que lleva tu nombre y las burbujas de las que eres dueño. Lo ven todos.</div>',
+      function () {
+        var sinColor = document.getElementById('m-color-off').checked;
+        var c = sinColor ? '' : document.getElementById('m-color').value;
+        persistReload(apiPost('mi-color/', { color: c }),
+                      sinColor ? 'Color quitado.' : 'Color actualizado.');
+      });
+  }
+
   // ----- Resumen por usuario -----
   function resumenPorUsuario() {
     // Fecha LOCAL en formato AAAA-MM-DD: toISOString() daría UTC y de noche
@@ -1087,6 +1191,7 @@
     });
     document.getElementById('btn-ajustar').addEventListener('click', function () { if (cy) { cy.fit(undefined, 60); syncOverlays(); } });
     document.getElementById('btn-resumen').addEventListener('click', modalResumen);
+    document.getElementById('btn-color').addEventListener('click', modalColor);
     document.getElementById('btn-zonas').addEventListener('click', function () {
       zonasOn = !zonasOn;
       guardarPref('tb_zonas', zonasOn);

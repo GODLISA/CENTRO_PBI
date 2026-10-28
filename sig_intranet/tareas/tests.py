@@ -13,7 +13,7 @@ from django.utils import timezone
 
 from . import services
 from .models import (
-    Dependencia, Objetivo, Subtarea, Tarea,
+    Dependencia, Objetivo, PreferenciaUsuario, Subtarea, Tarea,
     ESTADO_COMPLETADO, ESTADO_PENDIENTE,
 )
 from django.utils.dateparse import parse_date  # noqa: F401  (usado en los tests de validación)
@@ -333,3 +333,43 @@ class ValidacionEntradaTests(TestCase):
         self.assertEqual(resp.status_code, 400)
         t.refresh_from_db()
         self.assertEqual(t.recurrencia, 'semanal')
+
+
+class ColorUsuarioTests(TestCase):
+    """Color propio: se guarda, se valida y viaja en el tablero."""
+
+    def setUp(self):
+        self.user = User.objects.create_user('coloreado', password='x')
+        self.client.force_login(self.user)
+
+    def post(self, body):
+        return self.client.post(
+            reverse('tareas_mi_color'),
+            data=json.dumps(body), content_type='application/json')
+
+    def test_guarda_y_normaliza(self):
+        resp = self.post({'color': '#AABBCC'})
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(
+            PreferenciaUsuario.objects.get(usuario=self.user).color, '#aabbcc')
+
+    def test_rechaza_formato_invalido(self):
+        self.assertEqual(self.post({'color': 'rojo'}).status_code, 400)
+        self.assertEqual(self.post({'color': '#12345'}).status_code, 400)
+        self.assertFalse(PreferenciaUsuario.objects.exists())
+
+    def test_vacio_borra_el_color(self):
+        self.post({'color': '#112233'})
+        self.post({'color': ''})
+        self.assertEqual(
+            PreferenciaUsuario.objects.get(usuario=self.user).color, '')
+
+    def test_viaja_en_el_tablero(self):
+        self.post({'color': '#102030'})
+        datos = services.serializar_tablero(self.user)
+        mio = [u for u in datos['usuarios'] if u['id'] == services.uid(self.user.id)][0]
+        self.assertEqual(mio['color'], '#102030')
+
+    def test_sin_preferencia_devuelve_vacio(self):
+        datos = services.serializar_tablero(self.user)
+        self.assertEqual(datos['usuarios'][0]['color'], '')
